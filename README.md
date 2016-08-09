@@ -16,3 +16,15 @@ Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker
 * Investigate host / container monitoring
 * Investigate running shipyard for visualisation
 
+## The swarm
+After the boxes have been provisioned via Ansible the swarm is ready for containers
+
+```bash
+[root@manager1 vagrant]# docker node ls
+ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
+3ga8exh7uonx35nstda9d2tzd    manager2  Ready   Active        Reachable
+4vpyb82xlnn9z4ax22we7kied    worker2   Ready   Active
+8xr37ecimhrov0pddwudu6qxz    worker1   Ready   Active
+bcbmos2eaatri4sn080tks2oi    manager3  Ready   Active        Reachable
+bxcipvv74o4ontcr8jbh92dw6 *  manager1  Ready   Active        Leader
+```
