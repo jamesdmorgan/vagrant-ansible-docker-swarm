@@ -51,7 +51,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         worker.vm.provision :ansible do |ansible|
           # Disable default limit to connect to all the workers
           ansible.limit = "all"
-          ansible.playbook = "provision.yml"
+          ansible.playbook = "ansible/provision.yml"
           ansible.verbose = "vv"
           ansible.groups = {
             "managers" => ["manager[1:#{MANAGERS}]"],

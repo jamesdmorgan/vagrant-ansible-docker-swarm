@@ -38,9 +38,6 @@
 - hosts: managers[0]
   become: yes
   become_user: root
-  vars_files:
-    - vars/main.yml
-
   tasks:
     - name: "Starting primary swarm manager"
       shell: >
@@ -72,8 +69,6 @@
 - hosts: managers[1:]
   become: yes
   become_user: root
-  vars_files:
-    - vars/main.yml
   tasks:
     - name: "Starting secondary swarm managers"
       shell: >
@@ -86,8 +81,6 @@
 - hosts: workers
   become: yes
   become_user: root
-  vars_files:
-    - vars/main.yml
   tasks:
     - name: "Starting swarm workers"
       shell: >
