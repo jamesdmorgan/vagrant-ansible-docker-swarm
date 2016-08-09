@@ -81,7 +81,7 @@
   become: yes
   become_user: root
   tasks:
-    - name: "Starting secondary swarm managers"
+    - name: "Starting swarm workers"
       shell: >
         docker swarm join \
           --token {{ hostvars['manager1']['worker_token'] }} \
