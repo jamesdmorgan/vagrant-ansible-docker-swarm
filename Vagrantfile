@@ -12,40 +12,43 @@
 # the keypair creation when using the auto-generated inventory.
 
 VAGRANTFILE_API_VERSION = "2"
-N = 2
+MANAGERS = 1
+WORKERS = 2
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "centos/7"
+
+  config.ssh.insert_key = false
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
     v.cpus = 1
   end
 
-  (1..2).each do |manager_id|
+  (1..MANAGERS).each do |manager_id|
     config.vm.define "manager#{manager_id}" do |manager|
       manager.vm.hostname = "manager#{manager_id}"
       manager.vm.network "private_network", ip: "192.168.77.#{20+manager_id}"
     end
   end
 
-  (1..N).each do |worker_id|
+  (1..WORKERS).each do |worker_id|
     config.vm.define "worker#{worker_id}" do |worker|
       worker.vm.hostname = "worker#{worker_id}"
       worker.vm.network "private_network", ip: "192.168.77.#{30+worker_id}"
 
       # Only execute once the Ansible provisioner,
       # when all the workers are up and ready.
-      if worker_id == N
+      if worker_id == WORKERS
         worker.vm.provision :ansible do |ansible|
           # Disable default limit to connect to all the workers
           ansible.limit = "all"
           ansible.playbook = "provision.yml"
           ansible.verbose = "vv"
           ansible.groups = {
-            "managers" => ["manager[1:2]"],
-            "workers" => ["worker[1:#{N}]"],
+            "managers" => ["manager[1:#{MANAGERS}]"],
+            "workers" => ["worker[1:#{WORKERS}]"],
             "all_groups:children" => ["managers", "workers"]
           }
         end
