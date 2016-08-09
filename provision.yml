@@ -1,35 +1,102 @@
 ---
 - hosts: all
+  become: yes
+  become_user: root
   tasks:
     - debug: var=groups
     - debug: var=ansible_all_ipv4_addresses
 
+    - name: Check existence of docker
+      stat: path=/usr/lib/systemd/system/docker.service
+      register: install_result
+
     - name: Install docker 1.12
       shell: >
         curl -fsSL https://get.docker.com/ | sh
+      when: not install_result.stat.exists
 
     - name: Start docker service
-      become: yes
-      become_user: root
       service: name=docker state=started enabled=true
 
+    - name: Install required packages
+      yum: name={{ item }} state=latest
+      with_items:
+        - nc
+        - nmap
+
+    - name: Check the docker status
+      shell: >
+        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | tail -n +6 | python -m json.tool
+      register: docker_result
+
+    - set_fact:
+        docker_info: "{{ docker_result.stdout | from_json }}"
+
+    - debug: var=docker_info.Swarm.LocalNodeState
+
 - hosts: managers[0]
+  become: yes
+  become_user: root
   tasks:
-    - debug: msg="Starting primary swarm manager"
-    # Start primary swarm manager
+    - name: "Starting primary swarm manager"
+      shell: >
+        docker swarm init --advertise-addr {{ ansible_eth1.ipv4.address }}
+      register: init_result
+      when: docker_info.Swarm.LocalNodeState != "active"
 
-    # Create overlay network
+    - debug: var=init_result
 
-    # Save manager and worker tokens as facts
+    - name: "Retrieve manager token"
+      shell: >
+        docker swarm join-token manager --quiet
+      register: manager_token_result
+
+    - set_fact:
+        manager_token: "{{ manager_token_result.stdout }}"
+
+    - name: "Retrieve worker token"
+      shell: >
+        docker swarm join-token worker --quiet
+      register: worker_token_result
+
+    - set_fact:
+        worker_token: "{{ worker_token_result.stdout }}"
+
+    # TODO Create overlay network
+
 
 - hosts: managers[1:]
+  become: yes
+  become_user: root
   tasks:
-    - debug: msg="Starting secondary swarm managers"
-    # Start secondary swarm managers
-
-
+    - name: "Starting secondary swarm managers"
+      shell: >
+        docker swarm join \
+          --token {{ hostvars['manager1']['manager_token'] }} \
+          {{ hostvars['manager1'].ansible_eth1.ipv4.address }}:2377
+      register: init_result
+      when: docker_info.Swarm.LocalNodeState != "active"
 
 - hosts: workers
+  become: yes
+  become_user: root
   tasks:
-    - debug: msg="Starting swarm workers"
-    # Join swarm workers
+    - name: "Starting secondary swarm managers"
+      shell: >
+        docker swarm join \
+          --token {{ hostvars['manager1']['worker_token'] }} \
+          {{ hostvars['manager1'].ansible_eth1.ipv4.address }}:2377
+      register: init_result
+      when: docker_info.Swarm.LocalNodeState != "active"
+
+- hosts: managers[0]
+  become: yes
+  become_user: root
+  tasks:
+    - name: Examine the swarm
+      no_log: true
+      shell: >
+        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | tail -n +6 | python -m json.tool
+      register: docker_swarm_result
+
+    - debug: var=docker_info.Swarm
