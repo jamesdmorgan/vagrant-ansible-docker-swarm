@@ -99,4 +99,7 @@
         echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | tail -n +6 | python -m json.tool
       register: docker_swarm_result
 
-    - debug: var=docker_info.Swarm
+    - set_fact:
+        docker_swarm_info: "{{ docker_result.stdout | from_json }}"
+
+    - debug: var=docker_swarm_info.Swarm
