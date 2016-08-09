@@ -1,5 +1,5 @@
 # vagrant-ansible-docker-swarm
-Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker
+Initialising a Docker 1.12+ swarm cluster with Vagrant, Ansible &amp; Docker
 
 ## Current status
 * Vagrant spins up 5 virtual box machines, 3 managers for quorum & 2 workers
