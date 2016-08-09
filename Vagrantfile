@@ -12,24 +12,27 @@
 # the keypair creation when using the auto-generated inventory.
 
 VAGRANTFILE_API_VERSION = "2"
-MANAGERS = 1
+MANAGERS = 3
 WORKERS = 2
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "centos/7"
+  config.vm.box = "tsihosting/centos7"
+
+  config.vm.provider 'virtualbox' do |v|
+    v.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+  end
 
   config.ssh.insert_key = false
-
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 1024
-    v.cpus = 1
-  end
 
   (1..MANAGERS).each do |manager_id|
     config.vm.define "manager#{manager_id}" do |manager|
       manager.vm.hostname = "manager#{manager_id}"
       manager.vm.network "private_network", ip: "192.168.77.#{20+manager_id}"
+      manager.vm.provider "virtualbox" do |v|
+        v.memory = 512
+        v.cpus = 1
+      end
     end
   end
 
@@ -37,6 +40,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "worker#{worker_id}" do |worker|
       worker.vm.hostname = "worker#{worker_id}"
       worker.vm.network "private_network", ip: "192.168.77.#{30+worker_id}"
+      worker.vm.provider "virtualbox" do |v|
+        v.memory = 1024
+        v.cpus = 1
+      end
 
       # Only execute once the Ansible provisioner,
       # when all the workers are up and ready.
