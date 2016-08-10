@@ -48,16 +48,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Only execute once the Ansible provisioner,
       # when all the workers are up and ready.
       if worker_id == WORKERS
-        worker.vm.provision :ansible do |ansible|
+
+        worker.vm.provision "swarm", type: "ansible" do |ansible|
           # Disable default limit to connect to all the workers
           ansible.limit = "all"
-          ansible.playbook = "ansible/provision.yml"
+          ansible.playbook = "ansible/swarm.yml"
           ansible.verbose = "vv"
           ansible.groups = {
             "managers" => ["manager[1:#{MANAGERS}]"],
             "workers" => ["worker[1:#{WORKERS}]"],
             "all_groups:children" => ["managers", "workers"]
           }
+        end
+
+        # Addition provisioners are only called if --provision-with is passed
+        if ARGV.include? '--provision-with'
+          worker.vm.provision "monitoring",
+            type: "shell",
+            preserve_order: true,
+            inline: "echo Provisioning monitoring"
+
+          worker.vm.provision "applications",
+            type: "shell",
+            preserve_order: true,
+            inline: "echo Provisioning applications"
         end
       end
     end

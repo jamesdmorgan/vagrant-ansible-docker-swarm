@@ -94,7 +94,7 @@
   become: yes
   become_user: root
   tasks:
-    - pause: seconds=5
+    - pause: seconds=3
 
     - name: Examine the swarm
       no_log: true
