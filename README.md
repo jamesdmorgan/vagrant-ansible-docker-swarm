@@ -40,6 +40,8 @@ The demo uses 3 small manager boxes. I want to build a system that is as close t
 can run on a laptop. Its important that all applications including the swarm are highly available.
 The swarm managers need an odd number of boxes to correctly achieve quorum. The current docker [documentation](https://docs.docker.com/swarm/plan-for-production/) is pre 1.12 and external service discovery. This is handled in 1.12 by the docker engine.
 
+**update** Temporarily reduced managers & workers as hit performance issues with low specced boxes. 2 CPU/ 2Gb works
+
 As consul is used for other tasks other than service discovery. DNS, k/v store and health checking I will add it to
 the demo along with registrator. I'll continue to use the docker engine swarm for load balancing and service discovery unless
 consul brings benefit in this area
