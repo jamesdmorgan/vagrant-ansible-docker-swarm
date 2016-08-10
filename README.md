@@ -16,8 +16,35 @@ Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker 1.12
 * Investigate host / container monitoring
 * Investigate running shipyard for visualisation
 
+## Vagrant
+I have chosen to tie everything together using Vagant and Ansible. I could have used Docker Machine to create
+a cluster of boxes and shell scripts to initialise the swarm but I feel that Ansible is a cleaner solution.
+
+In a production environment the Ansible scripts can still be used alongside cloudformation or terraform.
+
+Using multiple named ansible provisioners means that I can iteratively build up the system. Each Ansible
+playbook will handle a different section. I.e docker swarm, monitoring, applications etc.
+
+As the docker swarm is the underlying framework that everything will run on it is the default provisioner
+
+To run the different provisioners run vagrant using the following command
+
+```bash
+$ vagrant provision --provision-with monitoring
+```
+
 ## The swarm
-After the boxes have been provisioned via Ansible the swarm is ready for containers
+After the boxes have been provisioned via Ansible the swarm is ready for containers.
+
+The demo uses 3 small manager boxes. I want to build a system that is as close to a production setup that
+can run on a laptop. Its important that all applications including the swarm are highly available.
+The swarm managers need an odd number of boxes to correctly achieve quorum. The current docker [documentation](https://docs.docker.com/swarm/plan-for-production/) is pre 1.12 and external service discovery. This is handled in 1.12 by the docker engine.
+
+As consul is used for other tasks other than service discovery. DNS, k/v store and health checking I will add it to
+the demo along with registrator. I'll continue to use the docker engine swarm for load balancing and service discovery unless
+consul brings benefit in this area
+
+There are currently two worker boxes though this can be scaled out depending on the host machines specs.
 
 ```bash
 [root@manager1 vagrant]# docker node ls
