@@ -12,8 +12,8 @@
 # the keypair creation when using the auto-generated inventory.
 
 VAGRANTFILE_API_VERSION = "2"
-MANAGERS = 3
-WORKERS = 2
+MANAGERS = 1
+WORKERS = 1
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -30,8 +30,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       manager.vm.hostname = "manager#{manager_id}"
       manager.vm.network "private_network", ip: "192.168.77.#{20+manager_id}"
       manager.vm.provider "virtualbox" do |v|
-        v.memory = 512
-        v.cpus = 1
+        #v.memory = 512
+        v.memory = 2048
+        v.cpus = 2
       end
     end
   end
@@ -41,8 +42,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       worker.vm.hostname = "worker#{worker_id}"
       worker.vm.network "private_network", ip: "192.168.77.#{30+worker_id}"
       worker.vm.provider "virtualbox" do |v|
-        v.memory = 1024
-        v.cpus = 1
+        #v.memory = 1024
+        v.memory = 2048
+        v.cpus = 2
       end
 
       # Only execute once the Ansible provisioner,
@@ -50,7 +52,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if worker_id == WORKERS
 
         worker.vm.provision "swarm", type: "ansible" do |ansible|
-          # Disable default limit to connect to all the workers
           ansible.limit = "all"
           ansible.playbook = "ansible/swarm.yml"
           ansible.verbose = "vv"
@@ -63,15 +64,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Addition provisioners are only called if --provision-with is passed
         if ARGV.include? '--provision-with'
+          worker.vm.provision "apps", type: "ansible" do |ansible|
+
+            # Only need to run against one of the managers since using swarm
+            ansible.limit = "managers*"
+            ansible.playbook = "ansible/apps.yml"
+            ansible.verbose = "vv"
+            ansible.groups = {
+              "managers" => ["manager[1:#{MANAGERS}]"],
+              "all_groups:children" => ["managers"]
+            }
+          end
           worker.vm.provision "monitoring",
             type: "shell",
             preserve_order: true,
             inline: "echo Provisioning monitoring"
-
-          worker.vm.provision "applications",
-            type: "shell",
-            preserve_order: true,
-            inline: "echo Provisioning applications"
         end
       end
     end

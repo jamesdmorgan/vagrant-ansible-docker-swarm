@@ -18,11 +18,16 @@
     - name: Start docker service
       service: name=docker state=started enabled=true
 
+    - name: Install epel
+      yum: name=epel-release state=latest
+
     - name: Install required packages
       yum: name={{ item }} state=latest
       with_items:
         - nc
         - nmap
+        - htop
+        - sysstat
 
     - name: Check the docker status
       no_log: true
