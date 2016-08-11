@@ -22,6 +22,7 @@
 - Add node labels to restrict containers
 - Add shipyard for visualisation
 - Add consul for external dns resolution and healthchecks (container or physical?)
+- Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
 ## [0.1](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.1) (2016-08-11)
 
