@@ -7,6 +7,7 @@
       yum: name={{ item }} state=latest
       with_items:
         - python-pip
+        - bind-utils
 
     - name: install docker python dependencies
       pip: name={{ item }}
@@ -19,33 +20,31 @@
       shell: >
         docker network ls --filter name={{ item }}$ | tail -n +2
       with_items:
-        - app
-        - db
+        - appnet
       register: network_result
 
     - set_fact:
-        docker_networks: "{{ network_result.results | map(attribute='stdout') | list | join(' ') }}"
+        docker_current_networks: "{{ network_result.results | map(attribute='stdout') | list | join(' ') }}"
 
     - name: Create overlay networks
       shell: >
         docker network create -d overlay {{ item }}
-      when: item not in docker_networks
+      when: item not in docker_current_networks
       with_items:
-        - app
-        - db
+        - appnet
 
     - name: Get existing services
       shell: >
-        docker service ls --filter name={{ item }} | tail -n +2
-      with_items:
-        - redis
-        - mongo
-        - api
-        - www
+        docker service ls --filter name={{ item.name }} | tail -n +2
+      with_items: "{{ docker_services }}"
       register: services_result
 
-    - debug: var=services_result
+    - set_fact:
+        docker_current_services: "{{ services_result.results | map(attribute='stdout') | list | join(' ') }}"
 
+    # Use task include so we can pause between starting up services.
+    - include: service.yml service_dict={{ item }}
+      with_items: "{{ docker_services }}"
 
 # --------------------------------------------------
 # docker_service has a number of issues that need looking

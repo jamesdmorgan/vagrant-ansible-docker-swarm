@@ -2,3 +2,29 @@
 vagrant_network_interface: enp0s8
 vagrant_primary_manager_ip: "{{ hostvars['manager1']['ansible_'+vagrant_network_interface].ipv4.address }}"
 swarm_bind_port: 2377
+docker_services:
+  - name: redis
+    definition: >
+      --network appnet
+      redis:3.0.7-alpine
+  - name: mongo
+    definition: >
+      --network appnet
+      mongo:3.2
+    pause: 10
+  - name: api
+    definition: >
+      --replicas 3
+      -p 8000:80/tcp
+      --env "MONGO_URL=mongodb://mongo/demo"
+      --network appnet
+      lucj/demo-api:1.0
+    pause: 10
+  - name: www
+    definition: >
+      --replicas 3
+      -p 80:80/tcp
+      --env "API=http://api"
+      --env "KV_STORE=redis"
+      --network appnet
+      lucj/demo-www:1.0
