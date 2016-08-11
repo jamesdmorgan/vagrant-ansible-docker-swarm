@@ -33,6 +33,31 @@ To run the different provisioners run vagrant using the following command
 $ vagrant provision --provision-with monitoring
 ```
 
+## Ansible
+The demo uses the latest version of Ansible v2.1 for the [docker service](https://docs.ansible.com/ansible/docker_service_module.html) module. Unfortunately this is currently [incompatible](https://github.com/docker/docker/issues/24107) with Docker Swarm due to docker-service using Docker compose behind the scenes. Hopefully this will be resolved soon as it provides more resilient idempotency and doesn't require searching the output of the **docker service** command.
+
+To speed up the development process its easy to run the Ansible provisioning directly from the root of the project directory
+
+If you use the following alias then you just need to provide the playbook
+
+```bash
+alias ansible-vagrant='PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_SSH_ARGS='\''-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ControlMaster=auto -o ControlPersist=60s'\'' ansible-playbook --connection=ssh --timeout=30 --inventory-file=.vagrant/provisioners/ansible/inventory'
+```
+
+```bash
+$ ansible-vagrant ansible/apps.yml -vv
+No config file found; using defaults
+
+PLAYBOOK: apps.yml *************************************************************
+1 plays in ansible/apps.yml
+
+PLAY [managers[0]] *************************************************************
+
+TASK [setup] *******************************************************************
+ok: [manager1]
+...
+```
+
 ## The swarm
 After the boxes have been provisioned via Ansible the swarm is ready for containers.
 

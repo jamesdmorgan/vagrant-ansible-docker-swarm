@@ -3,6 +3,18 @@
   become: yes
   become_user: root
   tasks:
+    - name: install dependencies
+      yum: name={{ item }} state=latest
+      with_items:
+        - python-pip
+
+    - name: install docker python dependencies
+      pip: name={{ item }}
+      with_items:
+        - pyyaml
+        - docker-py
+        - docker-compose
+
     - name: Get networks
       shell: >
         docker network ls --filter name={{ item }}$ | tail -n +2
@@ -21,3 +33,39 @@
       with_items:
         - app
         - db
+
+    - name: Get existing services
+      shell: >
+        docker service ls --filter name={{ item }} | tail -n +2
+      with_items:
+        - redis
+        - mongo
+        - api
+        - www
+      register: services_result
+
+    - debug: var=services_result
+
+
+# --------------------------------------------------
+# docker_service has a number of issues that need looking
+# into
+#   1. compose doesn't work with swarm - Major blocker
+# --------------------------------------------------
+#    - name: Start initial demo services
+#      docker_service:
+#        project_name: demo
+#        tls: yes
+#        definition:
+#          version: '2'
+#          networks:
+#            app:
+#              driver: overlay
+#          services:
+#            redis:
+#              image: redis:3.0.7-alpine
+#              networks:
+#                - app
+#     register: compose_result
+#
+#    - debug: var=compose_result
