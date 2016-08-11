@@ -82,3 +82,6 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 bcbmos2eaatri4sn080tks2oi    manager3  Ready   Active        Reachable
 bxcipvv74o4ontcr8jbh92dw6 *  manager1  Ready   Active        Leader
 ```
+
+## Applications
+At this stage of the project I just want to have a couple of services communicating over the distributed swarm. The blog post [Deploy a multi services application with swarm mode](http://lucjuggery.com/blog/?p=604) by Luc Juggery has a nice clear example that I have incorporated to demonstrate the swarm. This will provide a means to start testing the system monitoring that will be added later in the project. When this is in place i'll look to add my own applications.
