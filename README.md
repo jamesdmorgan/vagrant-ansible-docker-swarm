@@ -11,7 +11,7 @@ Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker 1.12
     * This can be replaced when there are Ansible modules for managing swarm.
 
 ## Next steps
-* Start simple flask & nginx containers as services using v2 docker compose
+* Start collection of services to test the swarm
 * Add multiple overlay networks for front and backend
 * Investigate host / container monitoring
 * Investigate running shipyard for visualisation
