@@ -68,9 +68,6 @@
     - set_fact:
         worker_token: "{{ worker_token_result.stdout }}"
 
-    # TODO Create overlay network
-
-
 - hosts: managers[1:]
   become: yes
   become_user: root
@@ -99,13 +96,17 @@
   become: yes
   become_user: root
   tasks:
+
     # Another way of doing this is to add group_vars for managers and workers
-    - name: "Label nodes"
-      shell: >
-        docker node update --label-add type={{ item | regex_replace('([a-z]+)\d$', '\1' ) }} {{ item }}
-      with_items: "{{ groups['all'] }}"
-      tags:
-        - label
+    # Also this is redundant as role is exposed anyway see
+    # https://docs.docker.com/engine/reference/commandline/service_create/#/specify-service-constraints
+    # Leaving here for the time being as will start labeling properly
+    #- name: "Label nodes"
+    #  shell: >
+    #    docker node update --label-add type={{ item | regex_replace('([a-z]+)\d$', '\1' ) }} {{ item }}
+    #  with_items: "{{ groups['all'] }}"
+    #  tags:
+    #    - label
 
     - name: Examine the swarm
       no_log: true
@@ -114,6 +115,6 @@
       register: docker_swarm_result
 
     - set_fact:
-        docker_swarm_info: "{{ docker_result.stdout | from_json }}"
+        docker_swarm_info: "{{ docker_swarm_result.stdout | from_json }}"
 
     - debug: var=docker_swarm_info.Swarm

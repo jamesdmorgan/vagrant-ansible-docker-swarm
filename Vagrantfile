@@ -14,6 +14,11 @@
 VAGRANTFILE_API_VERSION = "2"
 MANAGERS = 3
 WORKERS = 3
+ANSIBLE_GROUPS = {
+  "managers" => ["manager[1:#{MANAGERS}]"],
+  "workers" => ["worker[1:#{WORKERS}]"],
+  "all_groups:children" => ["managers", "workers"]
+}
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -55,11 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           ansible.limit = "all"
           ansible.playbook = "ansible/swarm.yml"
           ansible.verbose = "vv"
-          ansible.groups = {
-            "managers" => ["manager[1:#{MANAGERS}]"],
-            "workers" => ["worker[1:#{WORKERS}]"],
-            "all_groups:children" => ["managers", "workers"]
-          }
+          ansible.groups = ANSIBLE_GROUPS
         end
 
         # Addition provisioners are only called if --provision-with is passed
@@ -70,11 +71,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             ansible.limit = "managers*"
             ansible.playbook = "ansible/apps.yml"
             ansible.verbose = "vv"
-            ansible.groups = {
-              "managers" => ["manager[1:#{MANAGERS}]"],
-              "all_groups:children" => ["managers"]
-            }
+            ansible.groups = ANSIBLE_GROUPS
           end
+
+          worker.vm.provision "consul", type: "ansible" do |ansible|
+
+            # Only need to run against one of the managers since using swarm
+            ansible.limit = "all"
+            ansible.playbook = "ansible/consul.yml"
+            ansible.verbose = "vv"
+            ansible.groups = ANSIBLE_GROUPS
+          end
+
           worker.vm.provision "monitoring",
             type: "shell",
             preserve_order: true,

@@ -6,10 +6,12 @@ docker_services:
   - name: redis
     definition: >
       --network appnet
+      --constraint 'node.role == worker'
       redis:3.0.7-alpine
   - name: mongo
     definition: >
       --network appnet
+      --constraint 'node.role == worker'
       mongo:3.2
     pause: 10
   - name: api
@@ -18,6 +20,7 @@ docker_services:
       -p 8000:80/tcp
       --env "MONGO_URL=mongodb://mongo/demo"
       --network appnet
+      --constraint 'node.role == worker'
       lucj/demo-api:1.0
     pause: 10
   - name: www
@@ -27,4 +30,5 @@ docker_services:
       --env "API=http://api"
       --env "KV_STORE=redis"
       --network appnet
+      --constraint 'node.role == worker'
       lucj/demo-www:1.0
