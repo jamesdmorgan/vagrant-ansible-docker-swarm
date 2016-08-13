@@ -12,8 +12,8 @@
 # the keypair creation when using the auto-generated inventory.
 
 VAGRANTFILE_API_VERSION = "2"
-MANAGERS = 1
-WORKERS = 1
+MANAGERS = 3
+WORKERS = 3
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 

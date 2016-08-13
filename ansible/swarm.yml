@@ -99,7 +99,13 @@
   become: yes
   become_user: root
   tasks:
-    - pause: seconds=3
+    # Another way of doing this is to add group_vars for managers and workers
+    - name: "Label nodes"
+      shell: >
+        docker node update --label-add type={{ item | regex_replace('([a-z]+)\d$', '\1' ) }} {{ item }}
+      with_items: "{{ groups['all'] }}"
+      tags:
+        - label
 
     - name: Examine the swarm
       no_log: true

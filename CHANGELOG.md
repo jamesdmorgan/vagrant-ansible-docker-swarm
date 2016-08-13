@@ -19,10 +19,14 @@
     - influxdb
     - grafana
 
-- Add node labels to restrict containers
 - Add shipyard for visualisation
 - Add consul for external dns resolution and healthchecks (container or physical?)
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
+
+## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.1) (2016-08-14)
+
+** Added:**
+- Addded node labels manager and worker so we can restrict where services are run
 
 ## [0.1](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.1) (2016-08-11)
 
