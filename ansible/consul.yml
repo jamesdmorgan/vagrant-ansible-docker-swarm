@@ -1,4 +1,20 @@
 ---
-- hosts: all
-  tasks:
-    - debug: var=groups
+# Consul web UI: http://192.168.77.21:8500/ui
+# DNS: dig @172.17.0.1 -p 53 manager2.node.consul
+#
+- hosts: managers
+  become: yes
+  become_user: root
+  roles:
+    - role: consul
+      consul_servers_group: managers
+
+- hosts: workers
+  become: yes
+  become_user: root
+  roles:
+    - role: consul
+      consul_servers_group: managers
+      consul_mode: agent
+
+

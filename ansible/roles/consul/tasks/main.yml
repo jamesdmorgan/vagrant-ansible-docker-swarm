@@ -1,0 +1,53 @@
+- name: Install python-consul
+  pip:  name=python-consul  state=present
+
+- debug: var=consul_advertise
+- debug: var=consul_join_ip
+- debug: var=consul_servers_list
+
+- name: run consul container with bootstrap
+  docker:
+    name: consul
+    image: "{{ consul_image }}"
+    state: reloaded
+    detach: true
+    restart_policy: always
+    net: bridge
+    ports: "{{ consul_ports }}"
+    hostname: "{{ ansible_hostname }}"
+    volumes:
+    - /mnt:/data
+    command: -server -advertise "{{ consul_advertise }}" -bootstrap-expect "{{ consul_bootstrap_expect }}" -ui-dir /ui
+  when: consul_mode == "server" and consul_bootstrap == "1"
+
+- name: run consul container with join ip
+  docker:
+    name: consul
+    image: "{{ consul_image }}"
+    state: reloaded
+    detach: true
+    restart_policy: always
+    net: bridge
+    ports: "{{ consul_ports }}"
+    volumes:
+    - /mnt:/data
+    hostname: "{{ ansible_hostname }}"
+    command: -server -advertise "{{ consul_advertise }}" -join "{{ consul_join_ip }}" -ui-dir /ui
+  when: consul_mode == "server" and consul_bootstrap == "0"
+
+- name: run consul client container with join ip
+  docker:
+    name: consul
+    image: "{{ consul_image }}"
+    state: reloaded
+    detach: true
+    restart_policy: always
+    net: bridge
+    ports: "{{ consul_ports }}"
+    volumes:
+    - /mnt:/data
+    hostname: "{{ ansible_hostname }}"
+    command: -advertise "{{ consul_advertise }}" -join "{{ consul_join_ip }}" -ui-dir /ui
+  when: consul_mode == "agent"
+
+

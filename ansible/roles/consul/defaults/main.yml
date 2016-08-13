@@ -1,0 +1,36 @@
+---
+consul_dc: dc1
+consul_servers_group: consul_servers
+consul_interface: enp0s8
+consul_advertise: "{{ hostvars[inventory_hostname]['ansible_'+consul_interface]['ipv4']['address'] }}"
+consul_bind_addr: "{{ consul_advertise }}"
+consul_docker_bridge: "{{ hostvars[inventory_hostname]['ansible_docker0']['ipv4']['address'] }}"
+consul_mode: server
+consul_ports:
+  - 8300:8300
+  - 8301:8301
+  - 8301:8301/udp
+  - 8302:8302
+  - 8302:8302/udp
+  - 8400:8400
+  - 8500:8500
+  - "{{ consul_docker_bridge }}:53:53/udp"
+
+consul_servers_list: "
+        {%- if consul_servers is defined -%}
+           {{ consul_servers }}
+	{%- else -%}
+	    {{ groups[consul_servers_group] }}
+        {%- endif -%}"
+
+consul_join_ip: "
+        {%- if consul_servers is defined -%}
+            {{ consul_servers[0] }}
+        {%- else -%}
+            {{ hostvars[groups[consul_servers_group][0]]['ansible_'+consul_interface]['ipv4']['address'] }}
+        {%- endif -%}"
+consul_bootstrap_expect: "{{ consul_servers_list | length }}"
+consul_bootstrap: "{% if consul_bind_addr == consul_join_ip %}1{% else %}0{% endif %}"
+consul_version: 'latest'
+consul_image: "progrium/consul:{{consul_version}}"
+

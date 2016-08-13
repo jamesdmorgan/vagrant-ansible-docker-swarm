@@ -10,6 +10,7 @@
 - This can be replaced when there are Ansible modules for managing swarm.
 - Start collection of services to test the swarm
 - multiple overlay networks for front and backend
+- Clustered consul servers and nodes on all hosts
 
 ## Future
 - Add monitoring, investigate
@@ -20,13 +21,18 @@
     - grafana
 
 - Add shipyard for visualisation
-- Add consul for external dns resolution and healthchecks (container or physical?)
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
-## Unreleased [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-14)
+## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-14)
 
 ** Added:**
 - Restrict services to worker nodes using constraint filter
+- Added clustered consul docker container to each machine
+    - All provisioned with Ansible
+    - 3 servers on each manager
+    - 3 nodes on each worker
+    - UI available at http://192.168.77.21:8500/ui
+    - DNS available at dig @172.17.0.1 -p 53 manager2.node.consul
 
 ## [0.1](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.1) (2016-08-11)
 

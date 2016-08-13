@@ -1,21 +1,9 @@
 ---
+
 - hosts: managers[0]
   become: yes
   become_user: root
   tasks:
-    - name: install dependencies
-      yum: name={{ item }} state=latest
-      with_items:
-        - python-pip
-        - bind-utils
-
-    - name: install docker python dependencies
-      pip: name={{ item }}
-      with_items:
-        - pyyaml
-        - docker-py
-        - docker-compose
-
     - name: Get networks
       shell: >
         docker network ls --filter name={{ item }}$ | tail -n +2

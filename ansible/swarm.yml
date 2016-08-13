@@ -28,6 +28,19 @@
         - nmap
         - htop
         - sysstat
+        - python-pip
+        - bind-utils
+      tags:
+        - packages
+
+    - name: install docker python dependencies
+      pip: name={{ item }}
+      with_items:
+        - pyyaml
+        - docker-py
+        - docker-compose
+      tags:
+        - packages
 
     - name: Check the docker status
       no_log: true
