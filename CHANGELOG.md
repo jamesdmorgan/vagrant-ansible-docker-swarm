@@ -23,7 +23,7 @@
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
-## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-14)
+## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-13)
 
 ** Added:**
 - Restrict services to worker nodes using constraint filter
