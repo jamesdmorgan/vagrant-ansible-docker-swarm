@@ -26,7 +26,7 @@
 ## Unreleased [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-14)
 
 ** Added:**
-- Addded node labels manager and worker so we can restrict where services are run
+- Restrict services to worker nodes using constraint filter
 
 ## [0.1](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.1) (2016-08-11)
 
