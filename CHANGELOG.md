@@ -25,7 +25,7 @@
 
 ## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-13)
 
-** Added:**
+**Added:**
 - Restrict services to worker nodes using constraint filter
 - Added clustered consul docker container to each machine
     - All provisioned with Ansible
