@@ -28,7 +28,7 @@
 **Issues:**
 - Registrator does not work with 1.12 and service events
 
-    Possible temporary solution is to have a cron on each node and poll the docker daemon for events
+    Possible temporary solution is to have a container on each node and poll the docker daemon for events
 
     ```bash
     echo -e "GET /events?since=1471083135 HTTP/1.0\r\n" | nc -U /var/run/docker.sock
