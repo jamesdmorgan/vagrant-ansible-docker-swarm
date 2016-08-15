@@ -27,6 +27,7 @@
 
 **Issues:**
 - Registrator does not work with 1.12 and service events
+
     Possible temporary solution is to have a cron on each node and poll the docker daemon for events
 
     ```bash
