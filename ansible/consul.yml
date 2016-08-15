@@ -9,6 +9,7 @@
     - role: consul
       consul_servers_group: managers
 
+
 - hosts: workers
   become: yes
   become_user: root
@@ -16,5 +17,21 @@
     - role: consul
       consul_servers_group: managers
       consul_mode: agent
+
+# Registrator doesn't work with Docker 1.12 services at the moment
+#
+#- hosts: managers[0]
+#  become: yes
+#  become_user: root
+#  tasks:
+#    - name: Start registrator globally and connect to consul cluster
+#      shell: >
+#        docker service create \
+#          --name registrator \
+#          --mount=/var/run/docker.sock:/tmp/docker.sock \
+#          --network netapp \
+#          --mode global \
+#          gliderlabs/registrator:latest \
+#          consul://localhost:8500
 
 

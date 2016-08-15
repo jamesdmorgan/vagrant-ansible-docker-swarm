@@ -1,7 +1,17 @@
 # vagrant-ansible-docker-swarm
 Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker 1.12
 
-## [Current status](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/blob/master/CHANGELOG.md#current-status)
+## Overview
+
+### [Current status](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/blob/master/CHANGELOG.md#current-status)
+
+### Components
+
+- **Vagrant** - Management of Virtualbox VMs
+- **Ansible** - Provisioning of boxes
+- **Docker 1.12** - Swarm creation on manager and worker boxes
+- **Consul** - External DNS, K/V store and dashboard
+- **Registrator** - Intended to register services [but doesn't currently work](https://github.com/gliderlabs/registrator/issues/443) with **1.12**
 
 ## Vagrant
 I have chosen to tie everything together using Vagant and Ansible. I could have used Docker Machine to create
@@ -45,7 +55,7 @@ ok: [manager1]
 ...
 ```
 
-## The swarm
+## Docker Swarm
 After the boxes have been provisioned via Ansible the swarm is ready for containers.
 
 The demo uses 3 small manager boxes. I want to build a system that is as close to a production setup that
