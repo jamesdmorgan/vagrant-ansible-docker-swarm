@@ -23,6 +23,25 @@
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
+## [0.3] Unreleased
+
+**Issues:**
+- Registrator does not work with 1.12 and service events
+    - Possible temporary solution is to have a cron on each node and poll the docker daemon for events
+
+    ```bash
+    echo -e "GET /events?since=1471083135 HTTP/1.0\r\n" | nc -U /var/run/docker.sock
+    ```
+
+    The docker API returns newline delimited JSON which can be parsed using [NewlineJson](https://pypi.python.org/pypi/NewlineJSON/1.0)
+
+    This information can then be used to update consul for stopped and started apps
+
+    ```bash
+    /v1/agent/service/deregister/<serviceId>
+    /v1/agent/service/register/<serviceId>
+    ```
+
 ## [0.2](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-13)
 
 **Added:**
