@@ -23,7 +23,7 @@
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
-## [0.3] Unreleased
+## [0.3]() Unreleased
 
 **Issues:**
 - Registrator does not work with 1.12 and service events
