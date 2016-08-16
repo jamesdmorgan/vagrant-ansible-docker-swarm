@@ -25,8 +25,37 @@
 
 ## [0.3]() Unreleased
 
+**Added:**
+- Created python script that utilises docker-py and python-consul to listen for docker start/stop events
+and register/de-register with consul. The script runs inside an Alpine python container on each node in the cluster.
+
 **Issues:**
-- Registrator does not work with 1.12 and service events
+- Consul de-register doesn't seem to propogate properly. The request is picked up by the local agent but doesn't get removed. See [github](https://github.com/hashicorp/consul/issues/1188)
+
+    *Could be issue with leading slash*
+
+    ```bash Consul logs
+    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
+    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.1.6hwtxpok8yb7fbjsg87pfkay7'
+    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
+    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.1.6hwtxpok8yb7fbjsg87pfkay7'
+
+    curl http://localhost:8500/v1/catalog/service/www|jq
+
+    {
+        "Node": "worker1",
+        "Address": "192.168.77.31",
+        "ServiceID": "/www.1.6hwtxpok8yb7fbjsg87pfkay7",
+        "ServiceName": "www",
+        "ServiceTags": null,
+        "ServiceAddress": "",
+        "ServicePort": 80
+      },
+      ...
+
+    ```
+
+- Registrator does not work with 1.12 and service events **Address above**
 
     Possible temporary solution is to have a container on each node and poll the docker daemon for events
 

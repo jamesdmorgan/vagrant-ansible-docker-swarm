@@ -1,7 +1,10 @@
 ---
 - name: Start docker service in the swarm
   shell: >
-    docker service create --name {{ service_dict.name }} {{ service_dict.definition }}
+    docker service create \
+      --name {{ service_dict.name }} \
+      --env "CONSUL_SERVICE_PORT={{ service_dict.service_port | default(80) }}" \
+      {{ service_dict.definition }}
   when: service_dict.name not in docker_current_services
 
 - pause: seconds={{ service_dict.pause }}

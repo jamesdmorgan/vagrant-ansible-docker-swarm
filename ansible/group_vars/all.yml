@@ -4,17 +4,20 @@ vagrant_primary_manager_ip: "{{ hostvars['manager1']['ansible_'+vagrant_network_
 swarm_bind_port: 2377
 docker_services:
   - name: redis
+    service_port: 6397
     definition: >
       --network appnet
       --constraint 'node.role == worker'
       redis:3.0.7-alpine
   - name: mongo
+    service_port: 27017
     definition: >
       --network appnet
       --constraint 'node.role == worker'
       mongo:3.2
     pause: 10
   - name: api
+    service_port: 8000
     definition: >
       --replicas 3
       -p 8000:80/tcp
@@ -24,6 +27,7 @@ docker_services:
       lucj/demo-api:1.0
     pause: 10
   - name: www
+    service_port: 80
     definition: >
       --replicas 3
       -p 80:80/tcp

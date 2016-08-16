@@ -50,4 +50,22 @@
     command: -advertise "{{ consul_advertise }}" -join "{{ consul_join_ip }}" -ui-dir /ui
   when: consul_mode == "agent"
 
+- name: Build notifier container
+  command: >
+    docker build -t consul-notifier .
+  args:
+    chdir: /vagrant/consul-notifier
+
+- name: Start consul-notifier on the host
+  docker:
+    name: consul-notifier
+    image: consul-notifier
+    state: reloaded
+    detach: true
+    restart_policy: always
+    net: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    hostname: "{{ ansible_hostname }}"
+
 

@@ -12,6 +12,7 @@ Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker 1.12
 - **Docker 1.12** - Swarm creation on manager and worker boxes
 - **Consul** - External DNS, K/V store and dashboard
 - **Registrator** - Intended to register services [but doesn't currently work](https://github.com/gliderlabs/registrator/issues/443) with **1.12**
+- **Consul-notifier** - Temporary replacement to **Registrator** for registering services
 
 ## Vagrant
 I have chosen to tie everything together using Vagant and Ansible. I could have used Docker Machine to create
@@ -40,6 +41,8 @@ If you use the following alias then you just need to provide the playbook
 ```bash
 alias ansible-vagrant='PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_SSH_ARGS='\''-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ControlMaster=auto -o ControlPersist=60s'\'' ansible-playbook --connection=ssh --timeout=30 --inventory-file=.vagrant/provisioners/ansible/inventory'
 ```
+
+Using the Ansible docker modules handles reloading containers. This means that when you change the source for a container, Ansible will rebuild and reload it.
 
 ```bash
 $ ansible-vagrant ansible/apps.yml -vv

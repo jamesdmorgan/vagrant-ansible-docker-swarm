@@ -30,6 +30,7 @@
         - sysstat
         - python-pip
         - bind-utils
+        - jq # Json formatting
       tags:
         - packages
 

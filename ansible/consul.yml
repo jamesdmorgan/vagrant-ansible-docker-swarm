@@ -28,10 +28,12 @@
 #      shell: >
 #        docker service create \
 #          --name registrator \
-#          --mount=/var/run/docker.sock:/tmp/docker.sock \
-#          --network netapp \
+#          --mount type=volume,target=/tmp/docker.sock,src=/var/run/docker.sock \
+#          --network appnet \
 #          --mode global \
 #          gliderlabs/registrator:latest \
 #          consul://localhost:8500
+#      tags:
+#        - notify
 
 
