@@ -34,7 +34,7 @@ and register/de-register with consul. The script runs inside an Alpine python co
 
     *Could be issue with leading slash*
 
-    ```bash Consul logs
+    ```bash
     2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
     2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.1.6hwtxpok8yb7fbjsg87pfkay7'
     2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
