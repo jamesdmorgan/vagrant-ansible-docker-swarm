@@ -2,7 +2,6 @@
 
 ## Current status
 - Vagrant spins up 5 virtual box machines, 3 managers for quorum & 2 workers
-- The memory footprint is pretty small until I have add more memory to my machine...
 - Ansible provisions the boxes installing docker 1.12
 - The primary manager starts the swarm cluster, each other manager and worker then joins
 - The status of the swarm is outputted at the end
