@@ -3,7 +3,7 @@ Initialising a Docker swarm cluster with Vagrant, Ansible &amp; Docker 1.12
 
 ## Overview
 
-<img src="https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/blob/master/images/diagrams/swarm.png" width="100%">
+<img src="https://raw.githubusercontent.com/jamesdmorgan/vagrant-ansible-docker-swarm/master/images/diagrams/swarm.png" width="100%">
 
 ### [Current status](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/blob/master/CHANGELOG.md#current-status)
 
