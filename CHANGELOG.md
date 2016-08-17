@@ -4,20 +4,21 @@
 - Vagrant spins up 6 virtual box machines, 3 managers for quorum & 3 workers
 - Ansible provisions the boxes installing docker 1.12
 - The primary manager starts the swarm cluster, each other manager and worker then joins
-- The status of the swarm is outputted at the end
+  - The status of the swarm is outputted at the end
 - Installation of docker & initialisation of the swarm is idempotent so provision can be re-run
-- This can be replaced when there are Ansible modules for managing swarm.
+  - Use of shell can be replaced when there are Ansible modules for managing swarm.
 - Start collection of services to test the swarm
 - multiple overlay networks for front and backend
 - Clustered consul servers and nodes on all hosts
 
 ## Future
 - Add monitoring, investigate
-    - cAdvisor for docker stats
+    - [cAdvisor](https://github.com/google/cadvisor) for docker stats
     - collectd
-    - statsd for udp from applications
-    - influxdb
-    - grafana
+    - [influxdb](https://influxdata.com/)
+    - [grafana](https://grafana.net/)
+    - Riemann + [Riemann tools](https://github.com/riemann/riemann-tools) for Docker & Consul
+    - statsd for udp from applications (though Riemann.io recommend against UDP)
 
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
