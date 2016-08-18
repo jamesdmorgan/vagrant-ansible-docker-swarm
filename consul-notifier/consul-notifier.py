@@ -11,10 +11,6 @@ args = None
 
 # docker run -v /var/run/docker.sock:/var/run/docker.sock consul-notifier
 
-# Communicating with consul
-
-
-
 def setup_logging(verbose=False):
     '''
     Setup logging
