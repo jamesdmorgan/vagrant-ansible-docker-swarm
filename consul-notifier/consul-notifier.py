@@ -11,6 +11,7 @@ args = None
 
 # docker run -v /var/run/docker.sock:/var/run/docker.sock consul-notifier
 
+
 def setup_logging(verbose=False):
     '''
     Setup logging
@@ -44,7 +45,7 @@ class Service(object):
         self.container = cli.inspect_container(name)
         self.env = self.container['Config']['Env']
         self.hostname = self.container['Config']['Hostname']
-        self.port = self.get_port(80)
+        self.port = self.get_port(None)
 
         # Strip the leading slash
         self.container_name = self.container['Name'][1:]
@@ -75,6 +76,11 @@ class Service(object):
             logger.warning("Ignoring action {0}".format(action))
 
     def register(self):
+        if not self.port:
+            logger.info(
+                "Skipping registration of {0} not port defined".format(
+                    self.name))
+
         logger.info("Registering {0} {1} port {2}".format(
             self.name,
             self.container_id,
@@ -90,6 +96,11 @@ class Service(object):
             sys.exit(1)
 
     def deregister(self):
+        if not self.port:
+            logger.info(
+                "Skipping de-registration of {0} not port defined".format(
+                    self.name))
+
         logger.info("De-registering {0} {1}".format(
             self.name,
             self.container_id))
@@ -178,6 +189,10 @@ def stream(cli, con):
 
 
 def main():
+    '''
+        Register / De-register containers that have
+        CONSUL_SERVICE_PORT env variable defined
+    '''
     args = handler_args()
     setup_logging(args.verbose)
 
