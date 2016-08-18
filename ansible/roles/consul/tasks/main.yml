@@ -67,5 +67,7 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     hostname: "{{ ansible_hostname }}"
+  tags:
+    - notify
 
 
