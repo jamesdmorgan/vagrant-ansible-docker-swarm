@@ -29,31 +29,20 @@
 - Created python script that utilises docker-py and python-consul to listen for docker start/stop events
 and register/de-register with consul. The script runs inside an Alpine python container on each node in the cluster.
 
-**Issues:**
-- Consul de-register doesn't seem to propogate properly. The request is picked up by the local agent but doesn't get removed. See [github](https://github.com/hashicorp/consul/issues/1188)
-
-    *Could be issue with leading slash*
+    By default the container listens to the stream. You can manually register/deregister by passing args to the script
 
     ```bash
-    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
-    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.1.6hwtxpok8yb7fbjsg87pfkay7'
-    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.3.6jfx071h4fe14es85kddyuqd4'
-    2016/08/16 13:12:23 [INFO] agent: Deregistered service 'www.1.6hwtxpok8yb7fbjsg87pfkay7'
-
-    curl http://localhost:8500/v1/catalog/service/www|jq
-
-    {
-        "Node": "worker1",
-        "Address": "192.168.77.31",
-        "ServiceID": "/www.1.6hwtxpok8yb7fbjsg87pfkay7",
-        "ServiceName": "www",
-        "ServiceTags": null,
-        "ServiceAddress": "",
-        "ServicePort": 80
-      },
-      ...
-
+    /app # [root@worker1 vagrant]# docker exec -it $(cname consul-notifier) /bin/ash
+    /app # python consul-notifier.py -a register -n consul-notifier
+    [2016-08-18 12:18:13,374] Consul notifier processing register
+    [2016-08-18 12:18:13,377] Registering consul-notifier worker1:consul-notifier:80 port 80
+    /app # python consul-notifier.py -a deregister -n consul-notifier
+    [2016-08-18 12:18:18,184] Consul notifier processing deregister
+    [2016-08-18 12:18:18,188] De-registering consul-notifier worker1:consul-notifier:80
     ```
+
+
+**Issues:**
 
 - Registrator does not work with 1.12 and service events **Address above**
 

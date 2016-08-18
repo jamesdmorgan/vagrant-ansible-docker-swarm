@@ -68,7 +68,8 @@ class Service(object):
             self.port)
 
     def handle(self, action):
-        if (action in self.status_map and hasattr(self, self.status_map[action])):
+        if (action in self.status_map and
+                hasattr(self, self.status_map[action])):
             getattr(self, self.status_map[action])()
         else:
             logger.warning("Ignoring action {0}".format(action))
@@ -93,7 +94,7 @@ class Service(object):
             self.name,
             self.container_id))
 
-        res = con.agent.service.deregister(service_id=self.container_id)
+        res = self.con.agent.service.deregister(service_id=self.container_id)
 
         if not res:
             logger.error("Failed to de-register service")
