@@ -31,7 +31,7 @@
 ## [0.3]() Unreleased
 
 **Added:**
-- Created python script that utilises docker-py and python-consul to listen for docker start/stop events
+- Created python script that utilises **docker-py** and **python-consul** to listen for docker start/stop events
 and register/de-register with consul. The script runs inside an Alpine python container on each node in the cluster.
 
     By default the container listens to the stream. You can manually register/deregister by passing args to the script
