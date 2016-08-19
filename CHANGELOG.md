@@ -28,6 +28,8 @@
 
     This will initially be enabled for the consul-notifier as its simple and under our control.
 
+- Add syslog to all services as [--log-driver](https://docs.docker.com/engine/reference/commandline/service_create/) is now available for services
+
 ## [0.3]() Unreleased
 
 **Added:**
@@ -45,6 +47,10 @@ and register/de-register with consul. The script runs inside an Alpine python co
     [2016-08-18 12:18:18,184] Consul notifier processing deregister
     [2016-08-18 12:18:18,188] De-registering consul-notifier worker1:consul-notifier:80
     ```
+
+- Added logging.yml and monitoring.yml and Vagant ansible invocations.
+- Added rsyslog Ansible for all boxes
+- Added syslog driver and [tags](https://docs.docker.com/engine/admin/logging/log_tags/) to consul-notifier
 
 
 **Issues:**

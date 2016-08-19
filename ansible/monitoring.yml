@@ -1,0 +1,6 @@
+---
+# Monitoring - metric collection, filtering, storage and UI
+
+- hosts: all
+  tasks:
+    - debug: "Whoop monitoring!"

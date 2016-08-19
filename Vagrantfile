@@ -74,19 +74,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             ansible.groups = ANSIBLE_GROUPS
           end
 
-          worker.vm.provision "consul", type: "ansible" do |ansible|
+          worker.vm.provision "logging", type: "ansible" do |ansible|
+            ansible.limit = "all"
+            ansible.playbook = "ansible/logging.yml"
+            ansible.verbose = "vv"
+            ansible.sudo = true
+            ansible.groups = ANSIBLE_GROUPS
+          end
 
-            # Only need to run against one of the managers since using swarm
+          worker.vm.provision "consul", type: "ansible" do |ansible|
             ansible.limit = "all"
             ansible.playbook = "ansible/consul.yml"
             ansible.verbose = "vv"
             ansible.groups = ANSIBLE_GROUPS
           end
 
-          worker.vm.provision "monitoring",
-            type: "shell",
-            preserve_order: true,
-            inline: "echo Provisioning monitoring"
+          worker.vm.provision "monitoring", type: "ansible" do |ansible|
+            ansible.limit = "all"
+            ansible.playbook = "ansible/monitoring.yml"
+            ansible.verbose = "vv"
+            ansible.groups = ANSIBLE_GROUPS
+          end
         end
       end
     end

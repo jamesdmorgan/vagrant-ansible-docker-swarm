@@ -1,7 +1,12 @@
 ---
+
 vagrant_network_interface: enp0s8
 vagrant_primary_manager_ip: "{{ hostvars['manager1']['ansible_'+vagrant_network_interface].ipv4.address }}"
+
+# Docker Swarm
 swarm_bind_port: 2377
+
+# Swarm Applications
 docker_services:
   - name: redis
     service_port: 6397
@@ -36,3 +41,9 @@ docker_services:
       --network appnet
       --constraint 'node.role == worker'
       lucj/demo-www:1.0
+
+# Logging
+logstash_host: "{{ hostvars['manager2']['ansible_'+vagrant_network_interface].ipv4.address }}"
+
+
+# Monitoring

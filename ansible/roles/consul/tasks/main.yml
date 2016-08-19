@@ -64,6 +64,9 @@
     detach: true
     restart_policy: always
     net: host
+    log_driver: syslog
+    log_opt:
+        tag: "{% raw %}'{{.ImageName}}/{{.Name}}/{{.ID}}'{% endraw %}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     hostname: "{{ ansible_hostname }}"

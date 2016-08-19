@@ -1,0 +1,20 @@
+- name: Packages are present
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - rsyslog
+    - logrotate
+  tags: [rsyslog]
+
+- name: Config file is present
+  template:
+    src: 10-logstash.conf
+    dest: /etc/rsyslog.d/10-logstash.conf
+  register: config_result
+  tags: [rsyslog]
+
+- name: Service is restarted
+  service: name=rsyslog state=restarted
+  when: config_result.changed
+  tags: [rsyslog]
