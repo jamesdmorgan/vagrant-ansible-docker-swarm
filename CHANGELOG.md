@@ -30,7 +30,7 @@
 
 - Add syslog to all services as [--log-driver](https://docs.docker.com/engine/reference/commandline/service_create/) is now available for services
 
-## [0.3]() Unreleased
+## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-20)
 
 **Added:**
 - Created python script that utilises **docker-py** and **python-consul** to listen for docker start/stop events
@@ -51,6 +51,9 @@ and register/de-register with consul. The script runs inside an Alpine python co
 - Added logging.yml and monitoring.yml and Vagant ansible invocations.
 - Added rsyslog Ansible for all boxes
 - Added syslog driver and [tags](https://docs.docker.com/engine/admin/logging/log_tags/) to consul-notifier
+- Added syslog to all services
+- Added rudimentary ELK stack on 2nd Manager box
+    - rsyslog runs on every box and forwards messages to logstash -> elasticsearch -> kibana on Manager2
 
 
 **Issues:**
