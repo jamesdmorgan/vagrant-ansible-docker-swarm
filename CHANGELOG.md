@@ -30,7 +30,7 @@
 
 - Add syslog to all services as [--log-driver](https://docs.docker.com/engine/reference/commandline/service_create/) is now available for services
 
-## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.2) (2016-08-20)
+## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.3) (2016-08-20)
 
 **Added:**
 - Created python script that utilises **docker-py** and **python-consul** to listen for docker start/stop events
