@@ -17,7 +17,8 @@ WORKERS = 3
 ANSIBLE_GROUPS = {
   "managers" => ["manager[1:#{MANAGERS}]"],
   "workers" => ["worker[1:#{WORKERS}]"],
-  "all_groups:children" => ["managers", "workers"]
+  "elk" => ["manager[2:2]"],
+  "all_groups:children" => ["managers", "workers", "elk"]
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

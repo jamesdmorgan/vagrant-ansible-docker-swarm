@@ -42,6 +42,8 @@ docker_services:
       --constraint 'node.role == worker'
       lucj/demo-www:1.0
 
+docker_syslog_tag: "{% raw %}'{{.ImageName}}/{{.Name}}/{{.ID}}'{% endraw %}"
+
 # Logging
 logstash_host: "{{ hostvars['manager2']['ansible_'+vagrant_network_interface].ipv4.address }}"
 

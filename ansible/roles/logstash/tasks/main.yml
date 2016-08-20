@@ -1,0 +1,42 @@
+- name: Directories are present
+  file:
+    path: "{{ item.path }}"
+    recurse: yes
+    state: directory
+    mode: "{{ item.mode }}"
+  with_items: "{{ directories }}"
+  tags: [logstash]
+
+- name: Files are copied
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items: "{{ files }}"
+  tags: [logstash]
+
+- name: Container is running
+  docker:
+    name: logstash
+    image: logstash
+    state: running
+    hostname: "{{ ansible_hostname }}"
+    expose:
+      - 5044
+      - 25826
+      - 25826/udp
+      - 25827
+      - 25827/udp
+    ports:
+      - 5044:5044
+      - 5044:5044/udp
+      - 25826:25826
+      - 25826:25826/udp
+      - 25827:25827
+      - 25827:25827/udp
+    volumes:
+      - /data/logstash/conf:/conf
+      - /data/logstash/logs:/logs
+    links:
+      - elasticsearch:db
+    command: logstash -f /conf/{{ logstash_config }}
+  tags: [logstash]

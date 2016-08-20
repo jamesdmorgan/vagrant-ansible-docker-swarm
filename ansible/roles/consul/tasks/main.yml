@@ -66,7 +66,7 @@
     net: host
     log_driver: syslog
     log_opt:
-        tag: "{% raw %}'{{.ImageName}}/{{.Name}}/{{.ID}}'{% endraw %}"
+        tag: "{{ docker_syslog_tag }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     hostname: "{{ ansible_hostname }}"

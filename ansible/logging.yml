@@ -1,6 +1,12 @@
 ---
 # Centralised logging with RSyslog, ELK (Elastic Search, LogStash & Kibana)
+- hosts: elk
+  roles:
+    - role: elasticsearch
+    - role: logstash
+    - role: kibana
 
 - hosts: all
   roles:
     - role: rsyslog
+

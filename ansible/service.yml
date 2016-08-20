@@ -4,6 +4,8 @@
     docker service create \
       --name {{ service_dict.name }} \
       --env "CONSUL_SERVICE_PORT={{ service_dict.service_port | default(80) }}" \
+      --log-driver syslog \
+      --log-opt tag={{ docker_syslog_tag }} \
       {{ service_dict.definition }}
   when: service_dict.name not in docker_current_services
 
