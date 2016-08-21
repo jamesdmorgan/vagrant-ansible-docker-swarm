@@ -18,7 +18,12 @@ ANSIBLE_GROUPS = {
   "managers" => ["manager[1:#{MANAGERS}]"],
   "workers" => ["worker[1:#{WORKERS}]"],
   "elk" => ["manager[2:2]"],
-  "all_groups:children" => ["managers", "workers", "elk"]
+  "influxdb" => ["manager[3:3]"],
+  "all_groups:children" => [
+    "managers",
+    "workers",
+    "elk",
+    "influxdb"]
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -94,6 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             ansible.limit = "all"
             ansible.playbook = "ansible/monitoring.yml"
             ansible.verbose = "vv"
+            ansible.sudo = true
             ansible.groups = ANSIBLE_GROUPS
           end
         end

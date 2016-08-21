@@ -106,21 +106,25 @@
       register: init_result
       when: docker_info.Swarm.LocalNodeState != "active"
 
+- hosts: all
+  serial: 1
+  become: yes
+  become_user: root
+  tasks:
+    - name: "Label nodes"
+      shell: >
+        docker node update --label-add {{ item }}=true {{ inventory_hostname }}
+      when: "item != 'all_groups'"
+      with_items:
+        - "{{ group_names }}"
+      delegate_to: "{{ manager[0] }}"
+      tags:
+        - label
+
 - hosts: managers[0]
   become: yes
   become_user: root
   tasks:
-
-    # Another way of doing this is to add group_vars for managers and workers
-    # Also this is redundant as role is exposed anyway see
-    # https://docs.docker.com/engine/reference/commandline/service_create/#/specify-service-constraints
-    # Leaving here for the time being as will start labeling properly
-    #- name: "Label nodes"
-    #  shell: >
-    #    docker node update --label-add type={{ item | regex_replace('([a-z]+)\d$', '\1' ) }} {{ item }}
-    #  with_items: "{{ groups['all'] }}"
-    #  tags:
-    #    - label
 
     - name: Examine the swarm
       no_log: true
