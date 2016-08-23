@@ -23,12 +23,14 @@
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
-- Add centralised logging for containers to ELK
-    See this [blog](https://technologyconversations.com/2015/05/18/centralized-system-and-docker-logging-with-elk-stack/) for information on what will be looked into.
 
-    This will initially be enabled for the consul-notifier as its simple and under our control.
+## [0.4]()
 
-- Add syslog to all services as [--log-driver](https://docs.docker.com/engine/reference/commandline/service_create/) is now available for services
+**Added:**
+
+- Added monitoring ansible playbook
+- Added global collectd container service
+- Added influxdb service constrained to influx ansible group
 
 ## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.3) (2016-08-20)
 

@@ -117,7 +117,7 @@
       when: "item != 'all_groups'"
       with_items:
         - "{{ group_names }}"
-      delegate_to: "{{ manager[0] }}"
+      delegate_to: "{{ groups['managers'][0] }}"
       tags:
         - label
 

@@ -2,9 +2,11 @@
 # Monitoring - metric collection, filtering, storage and UI
 
 - hosts: all
-  tasks:
-    - name: Running collectd
-      debug: msg="Running collectd"
+  become: yes
+  become_user: root
+  roles:
+    - { role: collectd, tags: [collectd] }
+
 
 
 

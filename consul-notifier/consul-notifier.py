@@ -42,17 +42,6 @@ class Service(object):
 
         self.con = con
         self.name = name
-        self.container = cli.inspect_container(name)
-        self.env = self.container['Config']['Env']
-        self.hostname = self.container['Config']['Hostname']
-        self.port = self.get_port(None)
-
-        # Strip the leading slash
-        self.container_name = self.container['Name'][1:]
-        self.container_id = self.get_id()
-
-        if args.verbose:
-            print(json.dumps(self.container, sort_keys=True, indent=4))
 
     def get_port(self, default):
         for nv in self.env:
@@ -71,6 +60,19 @@ class Service(object):
     def handle(self, action):
         if (action in self.status_map and
                 hasattr(self, self.status_map[action])):
+
+            self.container = cli.inspect_container(name)
+            self.env = self.container['Config']['Env']
+            self.hostname = self.container['Config']['Hostname']
+            self.port = self.get_port(None)
+
+            # Strip the leading slash
+            self.container_name = self.container['Name'][1:]
+            self.container_id = self.get_id()
+
+            if args.verbose:
+                print(json.dumps(self.container, sort_keys=True, indent=4))
+
             getattr(self, self.status_map[action])()
         else:
             logger.warning("Ignoring action {0}".format(action))
@@ -100,6 +102,7 @@ class Service(object):
             logger.info(
                 "Skipping de-registration of {0} not port defined".format(
                     self.name))
+            return
 
         logger.info("De-registering {0} {1}".format(
             self.name,

@@ -1,0 +1,2 @@
+#!/usr/bin/execlineb
+/opt/collectd/sbin/collectd -f -C /etc/collectd/collectd.conf
