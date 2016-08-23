@@ -11,6 +11,8 @@
 # As of Vagrant 1.7.3, it is no longer necessary to disable
 # the keypair creation when using the auto-generated inventory.
 
+# Requires vagrant-host-shell
+
 VAGRANTFILE_API_VERSION = "2"
 MANAGERS = 3
 WORKERS = 3
@@ -58,9 +60,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.cpus = 2
       end
 
+
+
       # Only execute once the Ansible provisioner,
       # when all the workers are up and ready.
       if worker_id == WORKERS
+
+        # Install any ansible galaxy roles
+        worker.vm.provision "shell", type: "host_shell" do |sh|
+          sh.inline =  "cd ansible && ansible-galaxy install -r requirements.yml -p roles"
+        end
 
         worker.vm.provision "swarm", type: "ansible" do |ansible|
           ansible.limit = "all"

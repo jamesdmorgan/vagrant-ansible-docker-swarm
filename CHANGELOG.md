@@ -23,6 +23,9 @@
 - Add shipyard for visualisation
 - Consider [Alpine](https://github.com/maier/vagrant-alpine) vagrant box for workers as only running Docker
 
+- [Generate](https://galaxy.ansible.com/ansible/secure-docker-daemon/) ca & certs so we can connect to the manager1 daemon from other boxes.
+- Update systemd docker [file](https://docs.docker.com/engine/admin/systemd/) on manager1 so we can start the daemon with TCP/TLS support
+
 
 ## [0.4]()
 
