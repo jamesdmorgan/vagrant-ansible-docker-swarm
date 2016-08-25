@@ -1,33 +1,32 @@
 ---
 
-# Currently we can't communicate talk to remote docker daemon. Needs investigating
-# In the mean time to speed up the build we can build on 1 machine and save the image
-# to the shared vagrant directory and load it on all machines
-#
-# Look to start daemon running on 2375 https://docs.docker.com/v1.10/engine/reference/commandline/daemon/
 - name: Build collectd container
   run_once: true
   become: yes
   become_user: root
   shell: >
-    docker build -t collectd . && docker save collectd > /vagrant/collectd-docker.tar
-  delegate_to: "{{ groups['managers'][0] }}"
+    docker build -t collectd .
   args:
     chdir: /vagrant/collectd
 
-- name: load collectd image
-  become: yes
-  become_user: root
+- name: Get existing services
   shell: >
-    docker load -i /vagrant/collectd-docker.tar
-  when: inventory_hostname != "{{ groups['managers'][0] }}"
+    docker service ls --filter name=collectd | tail -n +2
+  register: collectd_result
 
-- name: Clean up collectd image
-  run_once: true
-  become: yes
-  become_user: root
-  file: path=/vagrant/collectd-docker.tar state=absent
-  delegate_to: "{{ groups['managers'][0] }}"
+#- name: load collectd image
+#  become: yes
+#  become_user: root
+#  shell: >
+#    docker load -i /vagrant/collectd-docker.tar
+#  when: inventory_hostname != "{{ groups['managers'][0] }}"
+
+#- name: Clean up collectd image
+#  run_once: true
+#  become: yes
+#  become_user: root
+#  file: path=/vagrant/collectd-docker.tar state=absent
+#  delegate_to: "{{ groups['managers'][0] }}"
 
 # Could possibly be an issue with the --priviledged flag which is not available
 # for services
@@ -43,3 +42,4 @@
       --mount type=bind,src=/vagrant/collectd/root/etc/collectd.d/,dst=/etc/collectd.d/ \
       --mount type=bind,src=/proc,dst=/mnt/proc,readonly \
       collectd
+  when: "'collectd' not in collectd_result.stdout"

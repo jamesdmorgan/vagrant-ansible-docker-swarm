@@ -60,8 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.cpus = 2
       end
 
-
-
       # Only execute once the Ansible provisioner,
       # when all the workers are up and ready.
       if worker_id == WORKERS

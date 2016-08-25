@@ -144,3 +144,5 @@
         docker_swarm_info: "{{ docker_swarm_result.stdout | from_json }}"
 
     - debug: var=docker_swarm_info.Swarm
+
+- include: network.yml

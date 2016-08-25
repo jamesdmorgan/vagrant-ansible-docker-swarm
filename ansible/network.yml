@@ -1,0 +1,22 @@
+---
+
+- hosts: managers[0]
+  become: yes
+  become_user: root
+  tasks:
+    - name: Get networks
+      shell: >
+        docker network ls --filter name={{ item }}$ | tail -n +2
+      with_items:
+        - appnet
+      register: network_result
+
+    - set_fact:
+        docker_current_networks: "{{ network_result.results | map(attribute='stdout') | list | join(' ') }}"
+
+    - name: Create overlay networks
+      shell: >
+        docker network create -d overlay {{ item }}
+      when: item not in docker_current_networks
+      with_items:
+        - appnet

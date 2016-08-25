@@ -1,7 +1,7 @@
 ---
 # Monitoring - metric collection, filtering, storage and UI
 
-- hosts: all
+- hosts: managers[0]
   become: yes
   become_user: root
   roles:
