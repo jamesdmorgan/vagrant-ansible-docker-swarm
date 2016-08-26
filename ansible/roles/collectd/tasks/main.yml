@@ -4,29 +4,37 @@
   run_once: true
   become: yes
   become_user: root
-  shell: >
-    docker build -t collectd .
-  args:
-    chdir: /vagrant/collectd
+  docker_image:
+    path: /vagrant/collectd
+    name: "{{ collectd_name }}"
+    archive_path: "{{ collectd_docker_tar }}"
 
 - name: Get existing services
   shell: >
-    docker service ls --filter name=collectd | tail -n +2
+    docker service ls --filter name={{ collectd_name }} | tail -n +2
   register: collectd_result
 
-#- name: load collectd image
-#  become: yes
-#  become_user: root
-#  shell: >
-#    docker load -i /vagrant/collectd-docker.tar
-#  when: inventory_hostname != "{{ groups['managers'][0] }}"
+- name: load collectd image
+  become: yes
+  become_user: root
+  shell: >
+    docker load -i {{ collectd_docker_tar }}
+  when: item != "{{ groups['managers'][0] }}"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['all'] }}"
 
-#- name: Clean up collectd image
-#  run_once: true
-#  become: yes
-#  become_user: root
-#  file: path=/vagrant/collectd-docker.tar state=absent
-#  delegate_to: "{{ groups['managers'][0] }}"
+- name: Clean up collectd image
+  run_once: true
+  become: yes
+  become_user: root
+  file: path={{ collectd_docker_tar }} state=absent
+
+- name: Stopped existing collectd service
+  become: yes
+  become_user: root
+  shell: >
+    docker service rm {{ collectd_name }}
+  when: "'collectd' in collectd_result.stdout"
 
 # Could possibly be an issue with the --priviledged flag which is not available
 # for services
@@ -34,12 +42,4 @@
   become: yes
   become_user: root
   shell: >
-    docker service create \
-      --name collectd \
-      --mode global \
-      --network appnet \
-      --mount type=bind,src=/vagrant/collectd/root/etc/collectd/,dst=/etc/collectd/ \
-      --mount type=bind,src=/vagrant/collectd/root/etc/collectd.d/,dst=/etc/collectd.d/ \
-      --mount type=bind,src=/proc,dst=/mnt/proc,readonly \
-      collectd
-  when: "'collectd' not in collectd_result.stdout"
+    docker service create {{ collectd_service_definition }}

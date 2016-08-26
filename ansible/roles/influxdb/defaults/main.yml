@@ -1,0 +1,16 @@
+---
+influxdb_name: influxdb
+influxdb_db_name: riemann-local
+influxdb_db_password: password
+influxdb_service_definition: >
+  --name {{ influxdb_name }}
+  --network appnet
+  -p 8083:8083/tcp
+  -p 8086:8086/tcp
+  --env "PRE_CREATE_DB={{ influxdb_db_name }}"
+  --env "INFLUXDB_INIT_PWD={{ influxdb_db_password }}"
+  --env "CONSUL_SERVICE_PORT=8086"
+  --log-driver syslog
+  --log-opt tag={{ docker_syslog_tag }}
+  --constraint 'node.labels.influxdb == true'
+  tutum/influxdb:0.12

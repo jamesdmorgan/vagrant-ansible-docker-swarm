@@ -1,0 +1,20 @@
+---
+
+riemann_name: riemann
+riemann_docker_tar: /vagrant/{{ riemann_name }}-docker.tar
+riemann_influx_dbhost: influxdb
+riemann_influx_dbname: riemann-local
+riemann_influx_user: root
+riemann_influx_password: password
+riemann_service_definition: >
+  --name riemann
+  --network appnet
+  --mount type=bind,src=/vagrant/riemann/src/,dst=/opt/riemann/etc/
+  -p 5555:5555/tcp
+  -p 5555:5555/udp
+  -p 5556:5556/tcp
+  --env "RIEMANN_INFLUXDB_DBHOST: {{ riemann_influx_dbhost }}"
+  --env "RIEMANN_INFLUXDB_DBNAME: {{ riemann_influx_dbname }}"
+  --env "RIEMANN_INFLUXDB_USER: {{ riemann_influx_user }}"
+  --env "RIEMANN_INFLUXDB_PASSWORD: {{ riemann_influx_password }}"
+  {{ riemann_name }}:latest

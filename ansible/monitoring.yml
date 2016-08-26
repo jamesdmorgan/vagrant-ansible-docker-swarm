@@ -5,24 +5,7 @@
   become: yes
   become_user: root
   roles:
+    - { role: influxdb, tags: [influxdb] }
+    - { role: riemann, tags: [riemann] }
     - { role: collectd, tags: [collectd] }
-
-
-
-
-- hosts: influxdb
-  become: yes
-  become_user: root
-  tasks:
-    - name: Running Influxdb
-      shell: >
-        docker service create \
-          --name influxdb \
-          --network appnet \
-          -p 8083:8083/tcp \
-          -p 8086:8086/tcp \
-          --env "CONSUL_SERVICE_PORT=8086" \
-          --log-driver syslog \
-          --log-opt tag={{ docker_syslog_tag }} \
-          --constraint 'node.labels.influxdb == true' \
-          tutum/influxdb:0.12
+    - { role: grafana, tags: [grafana] }

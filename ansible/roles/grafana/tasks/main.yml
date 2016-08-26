@@ -1,0 +1,43 @@
+---
+- name: Get existing services
+  shell: >
+    docker service ls --filter name={{ grafana_name }} | tail -n +2
+  register: grafana_result
+
+- name: Stopped existing grafana service
+  become: yes
+  become_user: root
+  shell: >
+    docker service rm {{ grafana_name }}
+  when: "'{{ grafana_name }}' in grafana_result.stdout"
+
+- name: Running Grafana service
+  become: yes
+  become_user: root
+  shell: >
+    docker service create {{ grafana_service_definition }}
+
+- pause: seconds=5
+
+- name: Imported Grafana dashboard
+  uri:
+    url: http://192.168.77.21:3001/api/dashboards/db
+    method: POST
+    user: "{{ grafana_user }}"
+    password: "{{ grafana_password }}"
+    body: "{{ lookup('template', grafana_dashboard_file) }}"
+    status_code: 200
+    body_format: json
+    force_basic_auth: yes
+
+- name: Imported Grafana datasources
+  uri:
+    url: http://192.168.77.21:3001/api/datasources
+    method: POST
+    user: "{{ grafana_user }}"
+    password: "{{ grafana_password }}"
+    body: "{{ lookup('template', item) }}"
+    status_code: 200
+    body_format: json
+    force_basic_auth: yes
+  with_items: "{{ grafana_datasource_files }}"

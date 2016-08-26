@@ -10,14 +10,16 @@
 - Start collection of services to test the swarm
 - multiple overlay networks for front and backend
 - Clustered consul servers and nodes on all hosts
+- Centralised logging via syslog docker log driver feeding into ELK stack
+  - Will publish all the endpoints
+
+- Host monitoring using collectd -> riemann -> influxdb -> grafana.
 
 ## Roadmap
 - Add monitoring, investigate
     - [cAdvisor](https://github.com/google/cadvisor) for docker stats
     - collectd
-    - [influxdb](https://influxdata.com/)
-    - [grafana](https://grafana.net/)
-    - Riemann + [Riemann tools](https://github.com/riemann/riemann-tools) for Docker & Consul
+    - [Riemann tools](https://github.com/riemann/riemann-tools) for Docker & Consul
     - statsd for udp from applications (though Riemann.io recommend against UDP)
 
 - Add shipyard for visualisation
@@ -28,16 +30,19 @@
 
 - Look to start daemon running on 2375 https://docs.docker.com/v1.10/engine/reference/commandline/daemon/
 
+- Add multiple overlay networks and pull out hardcoded **appnet** configuration
 
-## [0.4]()
+## [0.4](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.4) (2016-08-26) Monitoring
 
 **Added:**
 
 - Added monitoring ansible playbook
 - Added global collectd container service
-- Added influxdb service constrained to influx ansible group
+- Added [influxdb](https://influxdata.com/) service constrained to influx ansible group
+- Added single instance of [Riemann](http://riemann.io). H/A is [complicated](https://groups.google.com/forum/m/#!topic/riemann-users/pkMk0aWIjqo)
+- Added [grafana](https://grafana.net/) service including influxdb datasource and demo dashboard for CPU - needs work
 
-## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.3) (2016-08-20)
+## [0.3](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.3) (2016-08-20) Logging and Consul
 
 **Added:**
 - Created python script that utilises **docker-py** and **python-consul** to listen for docker start/stop events

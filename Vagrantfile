@@ -78,11 +78,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Addition provisioners are only called if --provision-with is passed
         if ARGV.include? '--provision-with'
-          worker.vm.provision "apps", type: "ansible" do |ansible|
-
-            # Only need to run against one of the managers since using swarm
-            ansible.limit = "managers*"
-            ansible.playbook = "ansible/apps.yml"
+          worker.vm.provision "consul", type: "ansible" do |ansible|
+            ansible.limit = "all"
+            ansible.playbook = "ansible/consul.yml"
             ansible.verbose = "vv"
             ansible.groups = ANSIBLE_GROUPS
           end
@@ -95,18 +93,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             ansible.groups = ANSIBLE_GROUPS
           end
 
-          worker.vm.provision "consul", type: "ansible" do |ansible|
-            ansible.limit = "all"
-            ansible.playbook = "ansible/consul.yml"
-            ansible.verbose = "vv"
-            ansible.groups = ANSIBLE_GROUPS
-          end
-
           worker.vm.provision "monitoring", type: "ansible" do |ansible|
             ansible.limit = "all"
             ansible.playbook = "ansible/monitoring.yml"
             ansible.verbose = "vv"
             ansible.sudo = true
+            ansible.groups = ANSIBLE_GROUPS
+          end
+
+          worker.vm.provision "apps", type: "ansible" do |ansible|
+
+            # Only need to run against one of the managers since using swarm
+            ansible.limit = "managers*"
+            ansible.playbook = "ansible/apps.yml"
+            ansible.verbose = "vv"
             ansible.groups = ANSIBLE_GROUPS
           end
         end

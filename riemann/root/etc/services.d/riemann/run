@@ -1,0 +1,2 @@
+#!/usr/bin/execlineb
+/opt/riemann/bin/riemann start

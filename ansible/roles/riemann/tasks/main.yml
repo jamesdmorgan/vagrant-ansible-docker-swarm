@@ -1,0 +1,42 @@
+---
+- name: Build riemann container
+  run_once: true
+  become: yes
+  become_user: root
+  docker_image:
+    path: "/vagrant/{{ riemann_name }}"
+    name: "{{ riemann_name }}"
+    archive_path: "{{ riemann_docker_tar }}"
+
+- name: Get existing services
+  shell: >
+    docker service ls --filter name={{ riemann_name }} | tail -n +2
+  register: riemann_result
+
+- name: load riemann image into all other docker daemons
+  become: yes
+  become_user: root
+  shell: >
+    docker load -i {{ riemann_docker_tar }}
+  when: item != "{{ groups['managers'][0] }}"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['all'] }}"
+
+- name: Clean up riemann image
+  run_once: true
+  become: yes
+  become_user: root
+  file: path={{ riemann_docker_tar }} state=absent
+
+- name: Stopped existing riemann service
+  become: yes
+  become_user: root
+  shell: >
+    docker service rm {{ riemann_name }}
+  when: "'{{ riemann_name }}' in riemann_result.stdout"
+
+- name: Running riemann service
+  become: yes
+  become_user: root
+  shell: >
+    docker service create {{ riemann_service_definition }}

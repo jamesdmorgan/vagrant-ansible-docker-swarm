@@ -1,0 +1,18 @@
+---
+- name: Get existing services
+  shell: >
+    docker service ls --filter name={{ influxdb_name }} | tail -n +2
+  register: influxdb_result
+
+- name: Stopped existing influxdb service
+  become: yes
+  become_user: root
+  shell: >
+    docker service rm {{ influxdb_name }}
+  when: "'{{ influxdb_name }}' in influxdb_result.stdout"
+
+- name: Running Influxdb
+  become: yes
+  become_user: root
+  shell: >
+    docker service create {{ influxdb_service_definition }}

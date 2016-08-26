@@ -1,0 +1,11 @@
+---
+collectd_name: collectd
+collectd_docker_tar: /vagrant/collectd-docker.tar
+collectd_service_definition: >
+  --name collectd
+  --mode global
+  --network appnet
+  --mount type=bind,src=/vagrant/collectd/root/etc/collectd/,dst=/etc/collectd/
+  --mount type=bind,src=/vagrant/collectd/root/etc/collectd.d/,dst=/etc/collectd.d/
+  --mount type=bind,src=/proc,dst=/mnt/proc,readonly
+  {{ collectd_name }}

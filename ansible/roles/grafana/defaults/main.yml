@@ -1,0 +1,23 @@
+---
+grafana_name: grafana
+grafana_user: admin
+grafana_password: password
+grafana_dashboard_file: templates/dashboard.json.j2
+grafana_datasource_files:
+  - templates/influxdb_datasource.json.j2
+
+influxdb_db_name: riemann-local
+influxdb_user: root
+influxdb_db_password: password
+influxdb_host: http://influxdb
+influxdb_port: 8086
+
+grafana_service_definition: >
+  --name {{ grafana_name }}
+  --network appnet
+  -p 3001:3000/tcp
+  --env "GF_SECURITY_ADMIN_PASSWORD={{ grafana_password }}"
+  --env "CONSUL_SERVICE_PORT=3001"
+  --log-driver syslog
+  --log-opt tag={{ docker_syslog_tag }}
+  grafana/grafana:3.1.0-beta1
