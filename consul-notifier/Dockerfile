@@ -13,4 +13,3 @@ WORKDIR /app
 COPY . /app
 
 ENTRYPOINT ["python", "consul-notifier.py"]
-CMD ["-v"]

@@ -29,7 +29,7 @@ def setup_logging(verbose=False):
 
 class Service(object):
 
-    def __init__(self, cli, con, name):
+    def __init__(self, cli, con, name, service):
 
         # http://gliderlabs.com/blog/2015/04/14/docker-events-explained/
         self.status_map = {
@@ -41,7 +41,9 @@ class Service(object):
         }
 
         self.con = con
+        self.cli = cli
         self.name = name
+        self.service = service
 
     def get_port(self, default):
         for nv in self.env:
@@ -61,7 +63,7 @@ class Service(object):
         if (action in self.status_map and
                 hasattr(self, self.status_map[action])):
 
-            self.container = cli.inspect_container(name)
+            self.container = self.cli.inspect_container(self.name)
             self.env = self.container['Config']['Env']
             self.hostname = self.container['Config']['Hostname']
             self.port = self.get_port(None)
@@ -81,17 +83,17 @@ class Service(object):
         if not self.port:
             logger.info(
                 "Skipping registration of {0} not port defined".format(
-                    self.name))
+                    self.service))
 
         logger.info("Registering {0} {1} port {2}".format(
-            self.name,
+            self.service,
             self.container_id,
             self.port))
 
         res = self.con.agent.service.register(
-            self.name,
+            self.service,
             service_id=self.container_id,
-            port=self.port)
+            port=int(self.port))
 
         if not res:
             logger.error("Failed to register service")
@@ -101,11 +103,11 @@ class Service(object):
         if not self.port:
             logger.info(
                 "Skipping de-registration of {0} not port defined".format(
-                    self.name))
+                    self.service))
             return
 
         logger.info("De-registering {0} {1}".format(
-            self.name,
+            self.service,
             self.container_id))
 
         res = self.con.agent.service.deregister(service_id=self.container_id)
@@ -179,7 +181,13 @@ def stream(cli, con):
     # start listening for new events
     for event in cli.events(decode=True):
 
+        service_key = 'com.docker.swarm.service.name'
+
+        if service_key not in event['Actor']['Attributes']:
+            continue
+
         name = event['Actor']['Attributes']['name']
+        service = event['Actor']['Attributes'][service_key]
         action = event['Action']
 
         print("-" * 80)
@@ -187,7 +195,7 @@ def stream(cli, con):
         print (json.dumps(event, sort_keys=True, indent=4))
         print("-" * 80)
 
-        s = Service(cli, con, name)
+        s = Service(cli, con, name, service)
         s.handle(action)
 
 

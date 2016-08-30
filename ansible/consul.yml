@@ -20,20 +20,20 @@
 
 # Registrator doesn't work with Docker 1.12 services at the moment
 # though will work with containers running via docker run
-- hosts: managers[0]
-  become: yes
-  become_user: root
-  tasks:
-    - name: Start registrator globally and connect to consul cluster
-      shell: >
-        docker service create \
-          --name registrator \
-          --mount type=bind,target=/tmp/docker.sock,src=/var/run/docker.sock \
-          --network appnet \
-          --mode global \
-          gliderlabs/registrator:latest \
-          consul://localhost:8500
-    tags:
-      - notify
+#- hosts: managers[0]
+#  become: yes
+#  become_user: root
+#  tasks:
+#    - name: Start registrator globally and connect to consul cluster
+#      shell: >
+#        docker service create \
+#          --name registrator \
+#          --mount type=bind,target=/tmp/docker.sock,src=/var/run/docker.sock \
+#          --network appnet \
+#          --mode global \
+#          gliderlabs/registrator:latest \
+#          consul://localhost:8500
+#      tags:
+#        - notify
 
 
