@@ -32,6 +32,11 @@
 
 - Add multiple overlay networks and pull out hardcoded **appnet** configuration
 
+## [0.5]() (Unreleased)
+
+**Added:**
+- Docker UI - http://192.168.77.21:9000/
+
 ## [0.4](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/releases/tag/v0.4) (2016-08-26) Monitoring
 
 **Added:**
