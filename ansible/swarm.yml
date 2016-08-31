@@ -3,56 +3,10 @@
 - hosts: all
   become: yes
   become_user: root
+  roles:
+    - { role: common, tags: common }
+    - { role: docker, tags: docker }
   tasks:
-    - debug: var=groups
-    - debug: var=ansible_all_ipv4_addresses
-
-    - name: Check existence of docker
-      stat: path=/usr/lib/systemd/system/docker.service
-      register: install_result
-
-    - name: Install docker 1.12
-      shell: >
-        curl -fsSL https://get.docker.com/ | sh
-      when: not install_result.stat.exists
-
-    - name: Start docker service
-      service: name=docker state=started enabled=true
-
-    - name: Install epel
-      yum: name=epel-release state=latest
-
-    - name: Install required packages
-      yum: name={{ item }} state=latest
-      with_items:
-        - nc
-        - nmap
-        - htop
-        - sysstat
-        - python-pip
-        - bind-utils
-        - jq # Json formatting
-      tags:
-        - packages
-
-    - name: install docker python dependencies
-      pip: name={{ item }}
-      with_items:
-        - pyyaml
-        - docker-py
-        - docker-compose
-      tags:
-        - packages
-
-    - name: Check the docker status
-      no_log: true
-      shell: >
-        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | tail -n +6 | python -m json.tool
-      register: docker_result
-
-    - set_fact:
-        docker_info: "{{ docker_result.stdout | from_json }}"
-
     - debug: var=docker_info.Swarm.LocalNodeState
 
 - name: Configure primary swarm manager

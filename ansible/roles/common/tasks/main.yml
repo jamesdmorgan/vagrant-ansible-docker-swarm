@@ -1,0 +1,25 @@
+---
+- name: Install epel
+  yum: name=epel-release state=latest
+
+- name: Install required packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - nc
+    - nmap
+    - htop
+    - sysstat
+    - python-pip
+    - bind-utils
+    - jq # Json formatting
+  tags:
+    - packages
+
+- name: install docker python dependencies
+  pip: name={{ item }}
+  with_items:
+    - pyyaml
+    - docker-py
+    - docker-compose
+  tags:
+    - packages
