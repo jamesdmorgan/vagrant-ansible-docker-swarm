@@ -32,6 +32,8 @@
 
 - Add multiple overlay networks and pull out hardcoded **appnet** configuration
 
+- Correct consul-notifier to handle multiple ports and register the name with the port in the same way registrator does.
+
 ## [0.5]() (Unreleased)
 
 **Added:**
