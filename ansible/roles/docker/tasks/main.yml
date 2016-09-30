@@ -19,16 +19,16 @@
 - set_fact:
     docker_info: "{{ docker_result.stdout | from_json }}"
 
-- name: Start docker-ui globally (needs work)
-  run_once: true
-  shell: >
-    docker service create \
-      --name docker-ui \
-      --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
-      -p 9000:9000/tcp \
-      --network appnet \
-      --mode global \
-      uifd/ui-for-docker \
-  delegate_to: "{{ groups['managers'][0] }}"
-  tags:
-    - docker-ui
+#- name: Start docker-ui globally (needs work)
+#  run_once: true
+#  shell: >
+#    docker service create \
+#      --name docker-ui \
+#      --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
+#      -p 9000:9000/tcp \
+#      --network appnet \
+#      --mode global \
+#      uifd/ui-for-docker \
+#  delegate_to: "{{ groups['managers'][0] }}"
+#  tags:
+##    - docker-ui
