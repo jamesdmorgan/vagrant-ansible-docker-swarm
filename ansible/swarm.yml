@@ -13,11 +13,11 @@
   hosts: managers[0]
   become: yes
   become_user: root
-#  roles:
-#    - role: ansible.secure-docker-daemon
-#      dds_host: "{{ vagrant_primary_manager_ip }}"
-#      dds_server_cert_path: /etc/default/docker
-#      dds_restart_docker: no
+  roles:
+    - role: ansible.secure-docker-daemon
+      dds_host: "{{ vagrant_primary_manager_ip }}"
+      dds_server_cert_path: /etc/default/docker
+      dds_restart_docker: no
 
   tasks:
     - name: "Starting primary swarm manager"
@@ -100,3 +100,20 @@
     - debug: var=docker_swarm_info.Swarm
 
 - include: network.yml
+
+- hosts: managers[0]
+  become: yes
+  become_user: root
+  tasks:
+    - name: Start docker-ui globally
+      run_once: true
+      shell: >
+         docker service create \
+           --name docker-ui \
+           --mount type=bind,target=/var/run/docker.sock,src=/var/run/docker.sock \
+           -p 9000:9000/tcp \
+           --network appnet \
+           --mode global \
+           uifd/ui-for-docker \
+      tags:
+        - docker-ui
