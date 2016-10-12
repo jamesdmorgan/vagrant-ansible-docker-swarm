@@ -18,6 +18,7 @@
       dds_host: "{{ vagrant_primary_manager_ip }}"
       dds_server_cert_path: /etc/default/docker
       dds_restart_docker: no
+      when: docker_secure | default(false) == true
 
   tasks:
     - name: "Starting primary swarm manager"

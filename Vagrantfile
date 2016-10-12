@@ -66,7 +66,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Install any ansible galaxy roles
         worker.vm.provision "shell", type: "host_shell" do |sh|
-          sh.inline =  "cd ansible && ansible-galaxy install -r requirements.yml -p roles"
+          sh.inline =  "cd ansible && ansible-galaxy install -r requirements.yml -p roles --ignore-errors"
         end
 
         worker.vm.provision "swarm", type: "ansible" do |ansible|
