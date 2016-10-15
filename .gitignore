@@ -1,2 +1,3 @@
 *.retry
 .vagrant
+.DS_Store

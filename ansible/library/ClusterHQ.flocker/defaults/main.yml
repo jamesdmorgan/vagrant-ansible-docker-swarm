@@ -1,0 +1,19 @@
+---
+
+# we have to configure the control service node and agent nodes
+# differently.  To accomplish this we choose what to import based on
+# the host's inventory group name.  Change these variables based what
+# you have named the inventory groups for these servers.
+flocker_control_service_groupname: flocker_control_service
+flocker_agents_groupname: flocker_agents
+flocker_docker_plugin_groupname: flocker_docker_plugin
+flocker_ceph_groupname: flocker_ceph
+
+# you must provide the absolute path to your flocker agent.yml file.
+flocker_agent_yml_path: ""
+
+flocker_cluster_name: my_flocker_cluster
+# Warning: this folder will be deleted everytime the playbook is run
+flocker_local_tempdir: /tmp/{{ flocker_cluster_name }}
+flocker_api_cert_name: api_user
+flocker_install_docker_plugin: true

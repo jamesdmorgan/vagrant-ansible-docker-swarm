@@ -1,0 +1,56 @@
+---
+- name: remove old /tmp/<clustername>/<node>
+  command: rm -rf "{{ flocker_local_tempdir }}/{{ inventory_hostname }}"
+  delegate_to: 127.0.0.1
+
+- name: create the directories to hold the agent certs
+  file:
+    path: "{{ flocker_local_tempdir }}/{{ inventory_hostname }}"
+    state: directory
+  delegate_to: 127.0.0.1
+
+- name: remove old certs
+  file: path="/etc/flocker/{{ item }}" state=absent
+  with_items:
+    - cluster.crt
+    - node.crt
+    - node.key
+  sudo: yes
+
+- name: copy agent.yml to the node
+  copy: src={{ flocker_agent_yml_path }} dest=/etc/flocker/agent.yml owner=root
+  sudo: yes
+  when: not (flocker_agent_yml_path is undefined or flocker_agent_yml_path is none or flocker_agent_yml_path | trim == '')
+
+- name: create the node certs on the local machine
+  shell: "flocker-ca create-node-certificate --outputpath={{ flocker_local_tempdir }}/{{ inventory_hostname }}/"
+  args:
+    chdir: "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+
+- name: copy cluster.crt to the node
+  copy:
+    src: "{{ flocker_local_tempdir }}/cluster.crt"
+    dest: /etc/flocker/cluster.crt
+  sudo: yes
+
+- name: copy the node cert to the correct agent node
+  copy:
+    src: "{{ item }}"
+    dest: /etc/flocker/node.crt
+  with_fileglob: "{{ flocker_local_tempdir }}/{{ inventory_hostname }}/*.crt"
+  sudo: yes
+  notify:
+    - restart flocker-dataset-agent
+    - restart flocker-container-agent
+
+- name: copy the key to the correct agent node
+  copy:
+    src: "{{ item }}"
+    dest: /etc/flocker/node.key
+    mode: 0600
+  with_fileglob: "{{ flocker_local_tempdir }}/{{ inventory_hostname }}/*.key"
+  sudo: yes
+  notify:
+    - restart flocker-dataset-agent
+    - restart flocker-container-agent

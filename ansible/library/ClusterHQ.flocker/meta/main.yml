@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Brendan Cox
+  description: Install Flocker and distribute certificates
+  company: ClusterHQ
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - trusty
+  galaxy_tags:
+    - flocker
+    - installer
+    - docker
+dependencies: []

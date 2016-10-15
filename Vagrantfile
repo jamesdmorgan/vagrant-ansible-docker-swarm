@@ -16,17 +16,21 @@
 VAGRANTFILE_API_VERSION = "2"
 MANAGERS = 3
 WORKERS = 3
-ANSIBLE_GROUPS = {
-  "managers" => ["manager[1:#{MANAGERS}]"],
-  "workers" => ["worker[1:#{WORKERS}]"],
-  "elk" => ["manager[2:2]"],
-  "influxdb" => ["manager[3:3]"],
-  "all_groups:children" => [
-    "managers",
-    "workers",
-    "elk",
-    "influxdb"]
-}
+# ANSIBLE_GROUPS = {
+#   "managers" => ["manager[1:#{MANAGERS}]"],
+#   "workers" => ["worker[1:#{WORKERS}]"],
+#   "elk" => ["manager[2:2]"],
+#   "influxdb" => ["manager[3:3]"],
+#   "flocker_control_service" => ["manager[1:1]"],
+#   "flocker_agents" => ["manager[1:#{MANAGERS}]", "worker[1:#{WORKERS}]"],
+#   "all_groups:children" => [
+#     "managers",
+#     "workers",
+#     "elk",
+#     "influxdb",
+#     "flocker_control_service",
+#     "flocker_agents"]
+# }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -60,57 +64,59 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.cpus = 2
       end
 
-      # Only execute once the Ansible provisioner,
-      # when all the workers are up and ready.
-      if worker_id == WORKERS
 
-        # Install any ansible galaxy roles
-        worker.vm.provision "shell", type: "host_shell" do |sh|
-          sh.inline =  "cd ansible && ansible-galaxy install -r requirements.yml -p roles --ignore-errors"
-        end
+      # # Only execute once the Ansible provisioner,
+      # # when all the workers are up and ready.
+      # if worker_id == WORKERS
 
-        worker.vm.provision "swarm", type: "ansible" do |ansible|
-          ansible.limit = "all"
-          ansible.playbook = "ansible/swarm.yml"
-          ansible.verbose = "vv"
-          ansible.groups = ANSIBLE_GROUPS
-        end
+      #   # Install any ansible galaxy roles
+      #   worker.vm.provision "shell", type: "host_shell" do |sh|
+      #     sh.inline =  "cd ansible && ansible-galaxy install -r requirements.yml --ignore-errors"
+      #   end
 
-        # Addition provisioners are only called if --provision-with is passed
-        if ARGV.include? '--provision-with'
-          worker.vm.provision "consul", type: "ansible" do |ansible|
-            ansible.limit = "all"
-            ansible.playbook = "ansible/consul.yml"
-            ansible.verbose = "vv"
-            ansible.groups = ANSIBLE_GROUPS
-          end
+      #   #TODO provision should be done via ansible commands not in Vagrantfile
+      #   worker.vm.provision "swarm", type: "ansible" do |ansible|
+      #     ansible.limit = "all"
+      #     ansible.playbook = "ansible/swarm.yml"
+      #     ansible.verbose = "vv"
+      #     ansible.groups = ANSIBLE_GROUPS
+      #   end
 
-          worker.vm.provision "logging", type: "ansible" do |ansible|
-            ansible.limit = "all"
-            ansible.playbook = "ansible/logging.yml"
-            ansible.verbose = "vv"
-            ansible.sudo = true
-            ansible.groups = ANSIBLE_GROUPS
-          end
+      #   # Addition provisioners are only called if --provision-with is passed
+      #   if ARGV.include? '--provision-with'
+      #     worker.vm.provision "consul", type: "ansible" do |ansible|
+      #       ansible.limit = "all"
+      #       ansible.playbook = "ansible/consul.yml"
+      #       ansible.verbose = "vv"
+      #       ansible.groups = ANSIBLE_GROUPS
+      #     end
 
-          worker.vm.provision "monitoring", type: "ansible" do |ansible|
-            ansible.limit = "all"
-            ansible.playbook = "ansible/monitoring.yml"
-            ansible.verbose = "vv"
-            ansible.sudo = true
-            ansible.groups = ANSIBLE_GROUPS
-          end
+      #     worker.vm.provision "logging", type: "ansible" do |ansible|
+      #       ansible.limit = "all"
+      #       ansible.playbook = "ansible/logging.yml"
+      #       ansible.verbose = "vv"
+      #       ansible.sudo = true
+      #       ansible.groups = ANSIBLE_GROUPS
+      #     end
 
-          worker.vm.provision "apps", type: "ansible" do |ansible|
+      #     worker.vm.provision "monitoring", type: "ansible" do |ansible|
+      #       ansible.limit = "all"
+      #       ansible.playbook = "ansible/monitoring.yml"
+      #       ansible.verbose = "vv"
+      #       ansible.sudo = true
+      #       ansible.groups = ANSIBLE_GROUPS
+      #     end
 
-            # Only need to run against one of the managers since using swarm
-            ansible.limit = "managers*"
-            ansible.playbook = "ansible/apps.yml"
-            ansible.verbose = "vv"
-            ansible.groups = ANSIBLE_GROUPS
-          end
-        end
-      end
+      #     worker.vm.provision "apps", type: "ansible" do |ansible|
+
+      #       # Only need to run against one of the managers since using swarm
+      #       ansible.limit = "managers*"
+      #       ansible.playbook = "ansible/apps.yml"
+      #       ansible.verbose = "vv"
+      #       ansible.groups = ANSIBLE_GROUPS
+      #     end
+      #   end
+      # end
     end
   end
 end

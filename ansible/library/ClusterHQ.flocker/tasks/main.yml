@@ -1,0 +1,75 @@
+---
+################################################################################
+# Preliminaries: ensure that the user has set variables
+# properly and that things are where they should be on the
+# host machine.
+
+- name: "Assert that we are on a supported platform"
+  assert: { that: "ansible_os_family | match('Debian') or ansible_os_family | match('RedHat')" }
+
+- name: "Assert that host groups are named correctly. If this fails, update *_groupnames from defaults/main.yml"
+  assert: { that: "'{{ flocker_control_service_groupname }}' in group_names or '{{ flocker_agents_groupname }}' in group_names" }
+
+- name: "Assert that the user has set flocker_agent_yml_path"
+  assert: { that: "flocker_agent_yml_path != '' "  }
+
+- name: "See if flocker-ca is installed on the host system"
+  command: which flocker-ca
+  register: flocker_ca_output
+  ignore_errors: True
+  delegate_to: 127.0.0.1
+
+- name: "Fail when flocker-ca is not installed on this system"
+  fail: msg="you must install flocker on the ansible host system. See https\://docs.clusterhq.com/en/latest/flocker-standalone/install-client.html"
+  when: "flocker_ca_output.rc != 0"
+  delegate_to: 127.0.0.1
+  
+- name: "Stat flocker_agent_yml_path"
+  stat: path={{ flocker_agent_yml_path }}
+  register: agent_path_test
+  delegate_to: 127.0.0.1
+
+- name: "Assert that flocker_agent_yml_filepath exists"
+  assert:
+    that:
+      - agent_path_test.stat.exists
+
+- include: debian_install.yml
+  when: ansible_os_family == 'Debian'
+
+- include: centos_install.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: remove old /tmp/<clustername>
+  command: rm -rf "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+  when: "'{{ flocker_control_service_groupname }}' in group_names"
+
+- name: remove old /etc/flocker on the node
+  command: rm -rf /etc/flocker
+  sudo: yes
+
+- name: create /etc/flocker on the node
+  file:
+    path: /etc/flocker
+    state: directory
+    mode: 0700
+  sudo: yes
+
+- include: configure_control_service.yml
+  when: "'{{ flocker_control_service_groupname }}' in group_names"
+
+- include: configure_agent.yml
+  when: "'{{ flocker_agents_groupname }}' in group_names"
+
+- include: configure_plugin.yml
+  when: "'{{ flocker_docker_plugin_groupname }}' in group_names"
+
+- include: ceph_install.yml
+  when: "'{{ flocker_ceph_groupname }}' in group_names"
+
+- include: debian_firewall.yml
+  when: "'{{ flocker_control_service_groupname }}' in group_names and ansible_os_family == 'Debian'"
+
+- include: centos_firewall.yml
+  when: "'{{ flocker_control_service_groupname }}' in group_names and ansible_os_family == 'RedHat'"

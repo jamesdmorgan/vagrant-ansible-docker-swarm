@@ -1,0 +1,11 @@
+"version": 1
+"control-service":
+  # In almost all situations, using 127.0.0.1 as our control node will
+  # not allow correct authentication between the control-service and
+  # the agent node but it'll work here since thats the inventory name.
+  "hostname": 127.0.0.1
+  "port": 4524
+   
+"dataset":
+  "backend": "loopback"
+  "root_path": "/var/lib/flocker/loopback"

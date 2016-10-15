@@ -91,3 +91,36 @@ At this stage of the project I just want to have a couple of services communicat
 ## Monitoring
 
 Please see the [Changelog Roadmap](https://github.com/jamesdmorgan/vagrant-ansible-docker-swarm/blob/master/CHANGELOG.md#roadmap) for plans regarding monitoring of both the containers and the system in general.
+
+## Flocker
+
+install focker-ca
+
+```
+####flocker-ca
+sudo python -m ensurepip
+sudo pip install virtualenv
+virtualenv --python=/usr/bin/python2.7 flocker-client
+source flocker-client/bin/activate
+pip install --upgrade pip
+pip install https://clusterhq-archive.s3.amazonaws.com/python/Flocker-1.15.0-py2-none-any.whl
+source flocker-client/bin/activate
+flocker-ca --version
+#####
+```
+
+
+```
+cd ansible
+export PYTHONUNBUFFERED=1
+ansible-playbook --connection=ssh swarm.yml -vv
+ansible-playbook --connection=ssh apps.yml -vv
+###flocker env
+source ../flocker-client/bin/activate
+ansible-playbook --connection=ssh flocker.yml -vv
+###
+ansible-playbook --connection=ssh monitoring.yml -vv --tags "influxdb"
+```
+
+influxdb can start in any hosts, the config file will be attached to that host using flocker
+

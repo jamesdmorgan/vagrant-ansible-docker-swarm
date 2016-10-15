@@ -1,0 +1,88 @@
+---
+- assert: { that: "ansible_os_family | match('Debian') or ansible_os_family | match('RedHat')" }
+
+- name: create /tmp/<clustername>
+  file:
+    path: "{{ flocker_local_tempdir }}"
+    state: directory
+  delegate_to: 127.0.0.1
+
+- name: flocker-ca initialize
+  shell: "flocker-ca initialize {{ flocker_cluster_name }}"
+  args:
+    chdir: "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+
+- name: flocker-ca create-control-certificate
+  shell: "flocker-ca create-control-certificate {{ inventory_hostname }}"
+  args:
+    chdir: "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+
+- name: create plugin cert if its getting created
+  shell: "flocker-ca create-api-certificate plugin-cert-20b0e0b9-7a4e-4c88-9dd3-7aae1201ac72"
+  args:
+    chdir: "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+  when: flocker_install_docker_plugin
+
+- name: create API cert
+  shell: "flocker-ca create-api-certificate {{ flocker_api_cert_name }}"
+  args:
+    chdir: "{{ flocker_local_tempdir }}"
+  delegate_to: 127.0.0.1
+
+- name: copy API cert.crt to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/{{ flocker_api_cert_name }}.crt"
+    dest: /etc/flocker/{{ flocker_api_cert_name }}.crt
+  sudo: yes
+
+- name: copy API cert.key to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/{{ flocker_api_cert_name }}.key"
+    dest: /etc/flocker/{{ flocker_api_cert_name }}.key
+  sudo: yes
+
+- name: copy cluster.crt to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/cluster.crt"
+    dest: /etc/flocker/cluster.crt
+  sudo: yes
+
+- name: copy control key to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/control-{{ inventory_hostname }}.key"
+    dest: /etc/flocker/control-service.key
+    mode: 0600
+  sudo: yes
+
+- name: copy control cert to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/control-{{ inventory_hostname }}.crt"
+    dest: /etc/flocker/control-service.crt
+  notify:
+    - restart flocker-control
+  sudo: yes
+
+- name: Flocker Control API port
+  lineinfile:
+    dest: /etc/services
+    line: 'flocker-control-api	4523/tcp	# Flocker Control API port'
+  sudo: yes
+
+- name: Flocker Control Agent port
+  lineinfile:
+    dest: /etc/services
+    line: 'flocker-control-agent	4524/tcp	# Flocker Control Agent port'
+  sudo: yes
+
+- name: setup flocker-control runlevels
+  copy: src=flocker-control.override dest=/etc/init/flocker-control.override
+  sudo: yes
+
+- include: debian_firewall.yml
+  when: ansible_os_family == 'Debian'
+
+- include: centos_firewall.yml
+  when: ansible_os_family == 'RedHat'

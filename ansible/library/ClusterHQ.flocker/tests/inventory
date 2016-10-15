@@ -1,0 +1,13 @@
+[flocker_control_service]
+127.0.0.1
+
+[flocker_agents]
+127.0.0.1
+
+[flocker_docker_plugin]
+127.0.0.1
+
+[nodes:children]
+flocker_control_service
+flocker_agents
+flocker_docker_plugin

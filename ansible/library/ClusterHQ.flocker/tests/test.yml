@@ -1,0 +1,9 @@
+---
+- hosts: nodes
+  remote_user: travis
+  vars:
+    flocker_agent_yml_path: "./agent.yml"
+  roles:
+    - role: ../../ansible-role-flocker
+      flocker_install_docker_plugin: true
+      flocker_api_cert_name: plugin

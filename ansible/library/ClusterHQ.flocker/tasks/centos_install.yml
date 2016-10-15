@@ -1,0 +1,23 @@
+---
+- name: get distro_info_string
+  command: "rpm -E %dist"
+  register: flocker_distro_info_string
+
+- name: install flocker repo
+  yum:
+    name: "https://clusterhq-archive.s3.amazonaws.com/centos/clusterhq-release{{ flocker_distro_info_string.stdout }}.noarch.rpm"
+    state: present
+  sudo: yes
+
+- name: install git
+  yum: name=git
+  sudo: yes
+
+- name: install flocker-node
+  yum: name=clusterhq-flocker-node
+  sudo: yes
+
+- name: install flocker-docker-plugin
+  yum: name=clusterhq-flocker-docker-plugin
+  sudo: yes
+  when: flocker_install_docker_plugin

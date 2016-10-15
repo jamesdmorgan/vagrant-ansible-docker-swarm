@@ -1,0 +1,37 @@
+---
+- name: get ubuntu version
+  command: "lsb_release --release --short"
+  register: flocker_ubuntu_release_version
+
+- name: install https for apt
+  apt:
+    name: apt-transport-https
+    update_cache: yes
+  sudo: yes
+
+- name: install software properties
+  apt: name=software-properties-common
+  sudo: yes
+
+- name: install git
+  apt: name=git
+  sudo: yes
+
+- name: install flocker-repo
+  command: add-apt-repository -y "deb https://clusterhq-archive.s3.amazonaws.com/ubuntu/{{ flocker_ubuntu_release_version.stdout }}/$(ARCH) /"
+  sudo: yes
+
+- name: install flocker-node (forcefully)
+  apt:
+    name: clusterhq-flocker-node
+    update_cache: yes
+    force: yes
+  sudo: yes
+
+- name: install flocker-docker-plugin (forcefully)
+  apt:
+    name: clusterhq-flocker-docker-plugin
+    update_cache: yes
+    force: yes
+  sudo: yes
+  when: flocker_install_docker_plugin
