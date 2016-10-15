@@ -1,0 +1,8 @@
+---
+- name: open firewall for flocker-control-api
+  command: "ufw allow flocker-control-api"
+  sudo: yes
+  
+- name: open firewall for flocker-control-agent  
+  command: "ufw allow flocker-control-agent"
+  sudo: yes

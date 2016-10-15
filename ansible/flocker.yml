@@ -1,0 +1,20 @@
+---
+- hosts: all
+  vars:
+    flocker_control_service_groupname: flocker_control_service
+    flocker_agents_groupname: flocker_agents
+    flocker_cluster_name: my_flocker_cluster
+    flocker_install_docker_plugin: true
+    flocker_api_cert_name: plugin
+    flocker_local_tempdir: /tmp/{{ flocker_cluster_name }}
+    flocker_agent_yml_path: /Users/others/working/aa_working/ansible/vagrant-ansible-docker-swarm/ansible/roles/loopback/files/agent.yml 
+  roles:
+    - { role: ClusterHQ.flocker, tags: [flocker] }
+
+- hosts: managers[1:]
+  become: yes
+  become_user: root
+  tasks:
+    - name: "Restart flocker-docker-plugin.service"
+      shell: >
+             systemctl restart flocker-docker-plugin

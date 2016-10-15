@@ -1,0 +1,24 @@
+---
+language: python
+python: "2.7"
+sudo: required
+dist: trusty
+
+before_install:
+  # Make sure everything's up to date.
+  - sudo apt-get update -qq
+
+install:
+  # Install Ansible.
+  - pip install ansible
+  # Install flocker
+  - sudo apt-get -y install gcc libffi-dev libssl-dev python2.7 python2.7-dev python-virtualenv
+  - sudo pip install --find-links=https://s3.amazonaws.com/clusterhq-archive/python/index.html Flocker
+  # Add ansible.cfg to pick up roles path.
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+
+script:
+  # Check the role/playbook's syntax.
+  - "ansible-playbook -i tests/inventory tests/test.yml --syntax-check"
+  # Make sure we can run all the plays
+  - "ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars 'flocker_agent_yml_path=tests/agent.yml'"

@@ -1,0 +1,23 @@
+
+- name: remove old certs
+  file: path="/etc/flocker/{{ item }}" state=absent
+  with_items:
+    - plugin-cert-20b0e0b9-7a4e-4c88-9dd3-7aae1201ac72.crt
+    - plugin-cert-20b0e0b9-7a4e-4c88-9dd3-7aae1201ac72.key
+  sudo: yes
+
+- name: copy API cert.crt to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/plugin-cert-20b0e0b9-7a4e-4c88-9dd3-7aae1201ac72.crt"
+    dest: /etc/flocker/plugin.crt
+  sudo: yes
+  notify:
+    - restart flocker-docker-plugin
+
+- name: copy API cert.key to the control node
+  copy:
+    src: "{{ flocker_local_tempdir }}/plugin-cert-20b0e0b9-7a4e-4c88-9dd3-7aae1201ac72.key"
+    dest: /etc/flocker/{{ flocker_api_cert_name }}.key
+  sudo: yes
+  notify:
+    - restart flocker-docker-plugin

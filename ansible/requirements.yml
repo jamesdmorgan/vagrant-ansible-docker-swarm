@@ -1,2 +1,6 @@
 ---
 - name: ansible.secure-docker-daemon
+  src: https://github.com/ansible/role-secure-docker-daemon.git
+  version: origin/master
+
+- src: ClusterHQ.flocker
