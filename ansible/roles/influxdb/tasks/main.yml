@@ -1,18 +1,42 @@
 ---
 - name: Get existing services
   shell: >
-    docker service ls --filter name={{ influxdb_name }} | tail -n +2
-  register: influxdb_result
+    docker service ls --filter name={{ name }} | tail -n +2
+  register: filter
 
 - name: Stopped existing influxdb service
   become: yes
   become_user: root
   shell: >
-    docker service rm {{ influxdb_name }}
-  when: "'{{ influxdb_name }}' in influxdb_result.stdout"
+    docker service rm {{ name }}
+  when: "'{{ name }}' in filter.stdout"
+
+- name: Ensures {{ conf_dir }} dir exists
+  file:
+    path: "{{ conf_dir }}"
+    state: directory
+
+- name: Create persistent volume {{ volume }}
+  become: yes
+  become_user: root
+  shell: >
+    docker volume create --name {{ volume }} -d flocker
+
+- name: Config file is present
+  template:
+    src: "{{ conf_file }}" 
+    dest: "{{ conf_path }}"
+  register: config_result
+
+- name: copy in persistent volume {{ volume }}
+  become: yes
+  become_user: root
+  shell: >
+    docker run -v {{ volume }}:{{ conf_dir }} -v {{conf_dir}}:/tmp/influxdb alpine cp /tmp/influxdb/influxdb.conf {{ conf_dir }}/{{ conf_file }}
 
 - name: Running Influxdb
   become: yes
   become_user: root
   shell: >
-    docker service create {{ influxdb_service_definition }}
+    docker service create {{ service_definition }}
+
