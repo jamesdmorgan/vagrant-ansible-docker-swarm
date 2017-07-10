@@ -92,7 +92,7 @@
     - name: Examine the swarm
       no_log: true
       shell: >
-        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | tail -n +6 | python -m json.tool
+        echo -e "GET /info HTTP/1.0\r\n" | nc -U /var/run/docker.sock | sed -n -e "/^{/p"| python -m json.tool
       register: docker_swarm_result
 
     - set_fact:
