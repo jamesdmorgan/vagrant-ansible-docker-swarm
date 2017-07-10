@@ -12,6 +12,10 @@
 # the keypair creation when using the auto-generated inventory.
 
 # Requires vagrant-host-shell
+required_plugins = %w( vagrant-host-shell )
+required_plugins.each do |plugin|
+  system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
+end
 
 VAGRANTFILE_API_VERSION = "2"
 MANAGERS = 3
