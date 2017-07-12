@@ -1,2 +1,3 @@
 *.retry
 .vagrant
+ansible/roles/alexinthesky.secure-docker-daemon

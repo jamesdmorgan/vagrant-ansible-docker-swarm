@@ -1,2 +1,2 @@
 ---
-- name: ansible.secure-docker-daemon
+- name: alexinthesky.secure-docker-daemon
